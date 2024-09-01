@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.github.melq.howmanydays.ui.screens.EditMode
+import com.github.melq.howmanydays.ui.screens.EditScreen
 import com.github.melq.howmanydays.ui.screens.MainScreen
 import com.github.melq.howmanydays.ui.screens.ScreenNames
 import com.github.melq.howmanydays.ui.theme.HowManyDaysTheme
@@ -44,11 +46,15 @@ fun HowManyDaysApp(
                 ) {
                     composable(route = ScreenNames.MainScreen.name) {
                         MainScreen(
-                            modifier = Modifier
+                            modifier = Modifier,
+                            onNavigateToEdit = { navController.navigate(ScreenNames.EditScreen.name) }
                         )
                     }
                     composable(route = ScreenNames.EditScreen.name) {
-                        // TODO: EditScreen
+                        EditScreen(
+                            modifier = Modifier,
+                            mode = EditMode.Add
+                        )
                     }
                 }
             }
