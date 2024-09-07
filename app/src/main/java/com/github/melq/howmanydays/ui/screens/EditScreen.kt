@@ -1,8 +1,10 @@
 package com.github.melq.howmanydays.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -33,13 +35,14 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun EditScreen(
     modifier: Modifier,
-    mode: EditMode
+    mode: EditMode,
+    onNavigateToMain: () -> Unit
 ) {
     HowManyDaysTheme {
         Surface {
             Column {
                 val dayInfo = EditForm(modifier = modifier)
-                Buttons(modifier = modifier, mode = mode)
+                Buttons(modifier = modifier, mode = mode, onNavigateToMain = onNavigateToMain)
             }
         }
     }
@@ -100,38 +103,49 @@ fun EditForm(modifier: Modifier): DayInfo {
             }
         }
     )
-    Box {
-        Row(modifier = modifier.align(Alignment.Center)) {
-            for (mode in DisplayMode.entries) {
-                RadioButton(
-                    selected = displayMode == mode,
-                    onClick = {
-                        displayMode = mode
-                    },
-                )
-                Text(
-                    text = mode.toString(),
-                    modifier = modifier.align(Alignment.CenterVertically),
-                )
-            }
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        for (mode in DisplayMode.entries) {
+            RadioButton(
+                selected = displayMode == mode,
+                onClick = {
+                    displayMode = mode
+                },
+            )
+            Text(
+                text = mode.toString(),
+                modifier = modifier
+                    .align(Alignment.CenterVertically)
+            )
         }
     }
     return DayInfo(title, date, displayMode)
 }
 
 @Composable
-fun Buttons(modifier: Modifier, mode: EditMode) {
-    // TODO: CancelButton
-    if (mode == EditMode.Add) {
-        // TODO: AddButton
-    } else {
-        // TODO: DeleteButton
-        // TODO: EditButton
+fun Buttons(modifier: Modifier, mode: EditMode, onNavigateToMain: () -> Unit) {
+    Row(horizontalArrangement = Arrangement.End, modifier = modifier.fillMaxWidth()) {
+        TextButton(onClick = { onNavigateToMain() }) {
+            Text(text = "キャンセル")
+        }
+        if (mode == EditMode.Add) {
+            TextButton(onClick = { onNavigateToMain() }) {
+                Text(text = "登録")
+            }
+        } else {
+            TextButton(onClick = { onNavigateToMain() }) {
+                Text(text = "削除")
+            }
+            TextButton(onClick = { onNavigateToMain() }) {
+                Text(text = "更新")
+            }
+        }
     }
 }
 
 @Preview
 @Composable
 fun EditScreenPreview() {
-    EditScreen(modifier = Modifier, mode = EditMode.Add)
+    EditScreen(modifier = Modifier, mode = EditMode.Edit, onNavigateToMain = {})
 }

@@ -53,7 +53,8 @@ fun HowManyDaysApp(
                     composable(route = ScreenNames.EditScreen.name) {
                         EditScreen(
                             modifier = Modifier,
-                            mode = EditMode.Add
+                            mode = EditMode.Add,
+                            onNavigateToMain = { navController.navigate(ScreenNames.MainScreen.name) }
                         )
                     }
                 }
