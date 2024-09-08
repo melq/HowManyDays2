@@ -14,6 +14,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,7 +43,7 @@ fun EditScreen(
     HowManyDaysTheme {
         Surface {
             Column {
-                val dayInfo = EditForm(modifier = modifier)
+                val dayInfo = editForm(modifier = modifier)
                 Buttons(modifier = modifier, mode = mode, onNavigateToMain = onNavigateToMain)
             }
         }
@@ -50,15 +52,19 @@ fun EditScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditForm(modifier: Modifier): DayInfo {
-    var title = ""
-    var date = LocalDateTime.now()
-    var displayMode = DisplayMode.DAYS
+fun editForm(modifier: Modifier): DayInfo {
+    val (title, setTitle) = remember { mutableStateOf("") }
+    val (date, setDate) = remember { mutableStateOf(LocalDateTime.now()) }
+    val (displayMode, setDisplayMode) = remember { mutableStateOf(DisplayMode.DAYS) }
     TextField(
-        value = "",
-        onValueChange = { title = it },
+        value = title,
+        onValueChange = { setTitle(it) },
+        label = { Text("Title") },
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent
+        ),
         modifier = modifier.padding(8.dp),
-        label = { Text("Title") }
     )
     val state = rememberDatePickerState(
         initialSelectedDateMillis = Instant.now().toEpochMilli()
@@ -73,9 +79,13 @@ fun EditForm(modifier: Modifier): DayInfo {
                 TextButton(
                     onClick = {
                         visible = false
-                        date = LocalDateTime.ofInstant(
-                            Instant.ofEpochMilli(state.selectedDateMillis!!),
-                            java.util.TimeZone.getDefault().toZoneId()
+                        setDate(
+                            LocalDateTime.ofInstant(
+                                Instant.ofEpochMilli(
+                                    state.selectedDateMillis ?: Instant.now().toEpochMilli()
+                                ),
+                                java.util.TimeZone.getDefault().toZoneId()
+                            )
                         )
                     },
                     modifier = modifier.padding(8.dp)
@@ -90,8 +100,11 @@ fun EditForm(modifier: Modifier): DayInfo {
     TextField(
         value = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
         onValueChange = {},
-        modifier = modifier.padding(8.dp),
         label = { Text("Date") },
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent
+        ),
         readOnly = true,
         trailingIcon = {
             Box {
@@ -101,8 +114,10 @@ fun EditForm(modifier: Modifier): DayInfo {
                     Text("編集")
                 }
             }
-        }
+        },
+        modifier = modifier.padding(8.dp)
     )
+
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -110,7 +125,7 @@ fun EditForm(modifier: Modifier): DayInfo {
             RadioButton(
                 selected = displayMode == mode,
                 onClick = {
-                    displayMode = mode
+                    setDisplayMode(mode)
                 },
             )
             Text(
@@ -120,7 +135,9 @@ fun EditForm(modifier: Modifier): DayInfo {
             )
         }
     }
-    return DayInfo(title, date, displayMode)
+
+    val dayInfo = DayInfo(title, date, displayMode)
+    return dayInfo
 }
 
 @Composable
