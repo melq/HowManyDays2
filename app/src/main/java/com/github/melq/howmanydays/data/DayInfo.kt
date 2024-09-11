@@ -4,6 +4,6 @@ import java.time.LocalDateTime
 
 data class DayInfo(
     val title: String,
-    val date: LocalDateTime/* Todo: LocalDate */,
+    val date: LocalDateTime,
     val displayMode: DisplayMode
 )

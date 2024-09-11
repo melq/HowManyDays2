@@ -27,15 +27,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.melq.howmanydays.data.DayInfo
 import com.github.melq.howmanydays.data.DisplayMode
 import com.github.melq.howmanydays.ui.theme.HowManyDaysTheme
+import com.github.melq.howmanydays.viewmodel.HowManyDaysViewModel
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun EditScreen(
+    viewModel: HowManyDaysViewModel = viewModel(),
     modifier: Modifier,
     mode: EditMode,
     onNavigateToMain: () -> Unit
@@ -43,8 +46,13 @@ fun EditScreen(
     HowManyDaysTheme {
         Surface {
             Column {
-                val dayInfo = editForm(modifier = modifier)
-                Buttons(modifier = modifier, mode = mode, onNavigateToMain = onNavigateToMain)
+                val dayInfo = editForm(modifier = modifier, viewModel = viewModel)
+                Buttons(
+                    modifier = modifier,
+                    mode = mode,
+                    onNavigateToMain = onNavigateToMain,
+                    dayInfo
+                )
             }
         }
     }
@@ -52,13 +60,16 @@ fun EditScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun editForm(modifier: Modifier): DayInfo {
-    val (title, setTitle) = remember { mutableStateOf("") }
-    val (date, setDate) = remember { mutableStateOf(LocalDateTime.now()) }
-    val (displayMode, setDisplayMode) = remember { mutableStateOf(DisplayMode.DAYS) }
+fun editForm(
+    viewModel: HowManyDaysViewModel,
+    modifier: Modifier
+): DayInfo {
+    val title by viewModel.title
+    val date by viewModel.date
+    val displayMode by viewModel.displayMode
     TextField(
         value = title,
-        onValueChange = { setTitle(it) },
+        onValueChange = { viewModel.setTitle(it) },
         label = { Text("Title") },
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
@@ -79,7 +90,7 @@ fun editForm(modifier: Modifier): DayInfo {
                 TextButton(
                     onClick = {
                         visible = false
-                        setDate(
+                        viewModel.setDate(
                             LocalDateTime.ofInstant(
                                 Instant.ofEpochMilli(
                                     state.selectedDateMillis ?: Instant.now().toEpochMilli()
@@ -125,7 +136,7 @@ fun editForm(modifier: Modifier): DayInfo {
             RadioButton(
                 selected = displayMode == mode,
                 onClick = {
-                    setDisplayMode(mode)
+                    viewModel.setDisplayMode(mode)
                 },
             )
             Text(
@@ -141,7 +152,12 @@ fun editForm(modifier: Modifier): DayInfo {
 }
 
 @Composable
-fun Buttons(modifier: Modifier, mode: EditMode, onNavigateToMain: () -> Unit) {
+fun Buttons(
+    modifier: Modifier,
+    mode: EditMode,
+    onNavigateToMain: () -> Unit,
+    dayInfo: DayInfo
+) {
     Row(horizontalArrangement = Arrangement.End, modifier = modifier.fillMaxWidth()) {
         TextButton(onClick = { onNavigateToMain() }) {
             Text(text = "キャンセル")
