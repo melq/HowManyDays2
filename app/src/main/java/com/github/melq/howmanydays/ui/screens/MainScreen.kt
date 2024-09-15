@@ -23,20 +23,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.melq.howmanydays.data.DayInfo
-import com.github.melq.howmanydays.data.DisplayMode
 import com.github.melq.howmanydays.ui.theme.HowManyDaysTheme
-import java.time.LocalDateTime
+import com.github.melq.howmanydays.viewmodel.HowManyDaysViewModel
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun MainScreen(
+    viewModel: HowManyDaysViewModel = viewModel(),
     modifier: Modifier,
     onNavigateToEdit: () -> Unit
 ) {
     HowManyDaysTheme {
         Surface {
-            DaysList(modifier)
+            DaysList(viewModel, modifier)
             Box(modifier = modifier.fillMaxSize()) {
                 FloatingActionButton(
                     modifier = Modifier
@@ -52,18 +53,10 @@ fun MainScreen(
 
 @Composable
 private fun DaysList(
-    modifier: Modifier
+    viewModel: HowManyDaysViewModel,
+    modifier: Modifier = Modifier
 ) {
-    val days = emptyList<DayInfo>().toMutableList()
-    val displayModes = DisplayMode.entries.toTypedArray()
-    for ((index, displayMode) in displayModes.withIndex()) {
-        days += DayInfo(
-            "TestTitle${index}",
-            LocalDateTime.now().plusDays(index.toLong()),
-            displayMode
-        )
-    }
-
+    val days = viewModel.getDayInfos()
     LazyColumn {
         items(days) { day ->
             DayItemRow(day, modifier)
@@ -78,7 +71,7 @@ private fun DaysList(
 }
 
 @Composable
-private fun DayItemRow(day: DayInfo, modifier: Modifier) {
+private fun DayItemRow(day: DayInfo, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         onClick = { /*TODO*/ }) {
@@ -105,7 +98,7 @@ private fun DayItemRow(day: DayInfo, modifier: Modifier) {
 fun DaysListPreview() {
     HowManyDaysTheme {
         Surface {
-            DaysList(modifier = Modifier)
+            MainScreen(modifier = Modifier, onNavigateToEdit = {})
         }
     }
 }
