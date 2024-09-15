@@ -51,7 +51,7 @@ fun EditScreen(
                     modifier = modifier,
                     mode = mode,
                     onNavigateToMain = onNavigateToMain,
-                    dayInfo
+                    executeUpsertDayInfo = { upsertDayInfo(viewModel, dayInfo) }
                 )
             }
         }
@@ -156,25 +156,38 @@ fun Buttons(
     modifier: Modifier,
     mode: EditMode,
     onNavigateToMain: () -> Unit,
-    dayInfo: DayInfo
+    executeUpsertDayInfo: () -> Unit
 ) {
     Row(horizontalArrangement = Arrangement.End, modifier = modifier.fillMaxWidth()) {
-        TextButton(onClick = { onNavigateToMain() }) {
+        TextButton(onClick = {
+            onNavigateToMain()
+            executeUpsertDayInfo()
+        }) {
             Text(text = "キャンセル")
         }
         if (mode == EditMode.Add) {
-            TextButton(onClick = { onNavigateToMain() }) {
+            TextButton(onClick = {
+                executeUpsertDayInfo()
+                onNavigateToMain()
+            }) {
                 Text(text = "登録")
             }
         } else {
             TextButton(onClick = { onNavigateToMain() }) {
                 Text(text = "削除")
             }
-            TextButton(onClick = { onNavigateToMain() }) {
+            TextButton(onClick = {
+                executeUpsertDayInfo()
+                onNavigateToMain()
+            }) {
                 Text(text = "更新")
             }
         }
     }
+}
+
+fun upsertDayInfo(viewModel: HowManyDaysViewModel, dayInfo: DayInfo) {
+    viewModel.upsertDayInfo(dayInfo)
 }
 
 @Preview
