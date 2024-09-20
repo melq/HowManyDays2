@@ -9,9 +9,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.github.melq.howmanydays.ui.screens.EditMode
 import com.github.melq.howmanydays.ui.screens.EditScreen
 import com.github.melq.howmanydays.ui.screens.MainScreen
@@ -44,17 +46,31 @@ fun HowManyDaysApp(
                     navController = navController,
                     startDestination = ScreenNames.MainScreen.name
                 ) {
-                    composable(route = ScreenNames.MainScreen.name) {
+                    composable(
+                        route = ScreenNames.MainScreen.name
+                    ) {
                         MainScreen(
                             modifier = Modifier,
-                            onNavigateToEdit = { navController.navigate(ScreenNames.EditScreen.name) }
+                            onNavigateToEdit = { mode: EditMode ->
+                                navController.navigate("${ScreenNames.EditScreen.name}/${mode.ordinal}")
+                            }
                         )
                     }
-                    composable(route = ScreenNames.EditScreen.name) {
+                    composable(
+                        route = "${ScreenNames.EditScreen.name}/{mode}",
+                        arguments = listOf(navArgument("mode") { NavType.StringType })
+                    ) { backStackEntry ->
                         EditScreen(
                             modifier = Modifier,
-                            mode = EditMode.Add,
-                            onNavigateToMain = { navController.navigate(ScreenNames.MainScreen.name) }
+                            mode = EditMode.fromOrdinal(
+                                (backStackEntry.arguments?.getString("mode") ?: "0").toInt()
+                            ),
+                            onNavigateToMain = {
+                                navController.popBackStack(
+                                    ScreenNames.MainScreen.name,
+                                    false
+                                )
+                            }
                         )
                     }
                 }

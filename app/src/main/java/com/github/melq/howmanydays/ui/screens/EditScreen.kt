@@ -40,19 +40,24 @@ import java.time.format.DateTimeFormatter
 fun EditScreen(
     viewModel: HowManyDaysViewModel = viewModel(),
     modifier: Modifier,
-    mode: EditMode,
+    mode: EditMode = EditMode.Add,
     onNavigateToMain: () -> Unit
 ) {
     HowManyDaysTheme {
         Surface {
             Column {
-                val dayInfo = editForm(modifier = modifier, viewModel = viewModel)
+                val editedDayInfo = editForm(
+                    modifier = modifier,
+                    viewModel = viewModel,
+                    dayInfo = viewModel.selectedDayInfo.value
+                )
                 Buttons(
                     modifier = modifier,
                     mode = mode,
                     onNavigateToMain = onNavigateToMain,
-                    executeUpsertDayInfo = { upsertDayInfo(viewModel, dayInfo) }
+                    executeUpsertDayInfo = { upsertDayInfo(viewModel, editedDayInfo) }
                 )
+                Text(text = mode.toString())
             }
         }
     }
@@ -62,8 +67,10 @@ fun EditScreen(
 @Composable
 fun editForm(
     viewModel: HowManyDaysViewModel,
-    modifier: Modifier
+    modifier: Modifier,
+    dayInfo: DayInfo
 ): DayInfo {
+    viewModel.setParametersByDayInfo(dayInfo)
     val title by viewModel.title
     val date by viewModel.date
     val displayMode by viewModel.displayMode

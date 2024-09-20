@@ -33,17 +33,17 @@ import java.time.format.DateTimeFormatter
 fun MainScreen(
     viewModel: HowManyDaysViewModel = viewModel(),
     modifier: Modifier,
-    onNavigateToEdit: () -> Unit
+    onNavigateToEdit: (EditMode) -> Unit
 ) {
     HowManyDaysTheme {
         Surface {
-            DaysList(viewModel, modifier)
+            DayInfosList(viewModel, modifier, onNavigateToEdit)
             Box(modifier = modifier.fillMaxSize()) {
                 FloatingActionButton(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(16.dp),
-                    onClick = { onNavigateToEdit() }) {
+                    onClick = { onNavigateToEdit(EditMode.Add) }) {
                     Icon(Icons.Filled.Add, "Add")
                 }
             }
@@ -52,14 +52,17 @@ fun MainScreen(
 }
 
 @Composable
-private fun DaysList(
+private fun DayInfosList(
     viewModel: HowManyDaysViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToEdit: (EditMode) -> Unit
 ) {
-    val days = viewModel.getDayInfos()
+    val dayInfos = viewModel.getDayInfos()
     LazyColumn {
-        items(days) { day ->
-            DayItemRow(day, modifier)
+        items(dayInfos) { dayInfo ->
+            DayItemRow(dayInfo, modifier) {
+                onNavigateToEdit(EditMode.Edit)
+            }
             HorizontalDivider(
                 modifier = Modifier
                     .height(1.dp)
@@ -71,21 +74,25 @@ private fun DaysList(
 }
 
 @Composable
-private fun DayItemRow(day: DayInfo, modifier: Modifier = Modifier) {
+private fun DayItemRow(
+    dayInfo: DayInfo,
+    modifier: Modifier = Modifier,
+    onNavigateToEdit: (EditMode) -> Unit
+) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        onClick = { /*TODO*/ }) {
+        onClick = { onNavigateToEdit(EditMode.Edit) }) {
         Column(
             modifier = modifier
                 .padding(8.dp)
         ) {
             Text(
-                text = day.title,
+                text = dayInfo.title,
                 fontSize = 24.sp,
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = day.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                text = dayInfo.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.primary
             )
