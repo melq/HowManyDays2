@@ -1,5 +1,6 @@
 package com.github.melq.howmanydays.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -47,18 +48,24 @@ class HowManyDaysViewModel : ViewModel() {
     }
 
     fun upsertDayInfo(dayInfo: DayInfo) {
-        setTitle("aaa")
+        Log.d("upsertDayInfo", dayInfo.toString())
     }
 
     fun getDayInfos(): List<DayInfo> {
         return dayInfos
     }
 
+    fun getCurrentDayInfoId(): Int {
+        return _selectedDayInfo.value?.id ?: -1
+    }
+
+    // todo: 削除する
     private fun initDayInfos(): List<DayInfo> {
         val days = emptyList<DayInfo>().toMutableList()
         val displayModes = DisplayMode.entries.toTypedArray()
         for ((index, displayMode) in displayModes.withIndex()) {
             days += DayInfo(
+                index,
                 "TestTitle: $index",
                 LocalDateTime.now().plusDays(index.toLong()),
                 displayMode

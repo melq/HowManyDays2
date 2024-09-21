@@ -161,7 +161,7 @@ fun editForm(
         }
     }
 
-    return DayInfo(title, date, displayMode)
+    return DayInfo(viewModel.getCurrentDayInfoId(), title, date, displayMode)
 }
 
 @Composable
