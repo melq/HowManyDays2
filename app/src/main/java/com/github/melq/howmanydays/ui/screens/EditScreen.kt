@@ -41,16 +41,25 @@ import java.time.format.DateTimeFormatter
 fun EditScreen(
     modifier: Modifier,
     viewModel: HowManyDaysViewModel,
-    mode: EditMode = EditMode.Add,
+    mode: EditMode,
     onNavigateToMain: () -> Unit
 ) {
+    LaunchedEffect(mode) {
+        if (mode == EditMode.Edit && viewModel.selectedDayInfo.value != null)
+            viewModel.setParametersByDayInfo(viewModel.selectedDayInfo.value!!)
+        else {
+            viewModel.clearSelectedDayInfo()
+            viewModel.setTitle("")
+            viewModel.setDate(LocalDateTime.now())
+            viewModel.setDisplayMode(DisplayMode.DAYS)
+        }
+    }
     HowManyDaysTheme {
         Surface {
             Column {
                 val editedDayInfo = editForm(
                     modifier = modifier,
                     viewModel = viewModel,
-                    dayInfo = viewModel.selectedDayInfo.value
                 )
                 Buttons(
                     modifier = modifier,
@@ -68,11 +77,7 @@ fun EditScreen(
 fun editForm(
     modifier: Modifier,
     viewModel: HowManyDaysViewModel,
-    dayInfo: DayInfo
 ): DayInfo {
-    LaunchedEffect(dayInfo) {
-        viewModel.setParametersByDayInfo(dayInfo)
-    }
     val title by viewModel.title
     val date by viewModel.date
     val displayMode by viewModel.displayMode
@@ -141,15 +146,15 @@ fun editForm(
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        for (mode in DisplayMode.entries) {
+        for (entry in DisplayMode.entries) {
             RadioButton(
-                selected = displayMode == mode,
+                selected = displayMode == entry,
                 onClick = {
-                    viewModel.setDisplayMode(mode)
+                    viewModel.setDisplayMode(entry)
                 },
             )
             Text(
-                text = mode.toString(),
+                text = entry.toString(),
                 modifier = modifier
                     .align(Alignment.CenterVertically)
             )
@@ -169,7 +174,6 @@ fun Buttons(
     Row(horizontalArrangement = Arrangement.End, modifier = modifier.fillMaxWidth()) {
         TextButton(onClick = {
             onNavigateToMain()
-            executeUpsertDayInfo()
         }) {
             Text(text = "キャンセル")
         }

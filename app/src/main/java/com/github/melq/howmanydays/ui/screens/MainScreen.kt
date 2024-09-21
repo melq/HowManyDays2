@@ -48,7 +48,6 @@ fun MainScreen(
                         .align(Alignment.BottomEnd)
                         .padding(16.dp),
                     onClick = {
-                        viewModel.clearSelectedDayInfo()
                         onNavigateToEdit(EditMode.Add)
                     }) {
                     Icon(Icons.Filled.Add, "Add")
