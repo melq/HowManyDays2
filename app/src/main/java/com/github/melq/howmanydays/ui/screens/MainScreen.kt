@@ -1,7 +1,9 @@
 package com.github.melq.howmanydays.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.melq.howmanydays.data.DayInfo
+import com.github.melq.howmanydays.data.DisplayMode
 import com.github.melq.howmanydays.ui.theme.HowManyDaysTheme
 import com.github.melq.howmanydays.viewmodel.HowManyDaysViewModel
 import java.time.format.DateTimeFormatter
@@ -98,14 +101,49 @@ private fun DayItemRow(
         ) {
             Text(
                 text = dayInfo.title,
-                fontSize = 24.sp,
+                fontSize = 20.sp,
                 color = MaterialTheme.colorScheme.primary
             )
-            Text(
-                text = dayInfo.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Row(
+                    modifier = modifier.alignByBaseline()
+                ) {
+                    Text(
+                        text = viewModel.calculateElapsedTime(
+                            dayInfo.date,
+                            dayInfo.displayMode
+                        ).toString(),
+                        modifier = modifier
+                            .alignByBaseline()
+                            .padding(horizontal = 4.dp),
+                        fontSize = 48.sp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = when (dayInfo.displayMode) {
+                            DisplayMode.DAYS -> "日"
+                            DisplayMode.WEEKS -> "週"
+                            DisplayMode.MONTHS -> "月"
+                            DisplayMode.YEARS -> "年"
+                        },
+                        modifier = modifier.alignByBaseline(),
+                        fontSize = 24.sp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Text(
+                    text = dayInfo.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    modifier = modifier.alignByBaseline(),
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }

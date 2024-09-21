@@ -6,7 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.github.melq.howmanydays.data.DayInfo
 import com.github.melq.howmanydays.data.DisplayMode
+import java.time.Duration
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 class HowManyDaysViewModel : ViewModel() {
     private val _title = mutableStateOf("")
@@ -64,6 +66,18 @@ class HowManyDaysViewModel : ViewModel() {
         return _selectedDayInfo.value?.id ?: -1
     }
 
+    fun calculateElapsedTime(date: LocalDateTime, displayMode: DisplayMode): Long {
+        val now = LocalDateTime.now()
+        val duration = Duration.between(date, now)
+
+        return when (displayMode) {
+            DisplayMode.DAYS -> duration.toDays()
+            DisplayMode.WEEKS -> duration.toDays() / 7
+            DisplayMode.MONTHS -> ChronoUnit.MONTHS.between(date, now)
+            DisplayMode.YEARS -> ChronoUnit.YEARS.between(date, now)
+        }
+    }
+
     // todo: 削除する
     private fun initDayInfos(): MutableList<DayInfo> {
         val days = emptyList<DayInfo>().toMutableList()
@@ -72,7 +86,7 @@ class HowManyDaysViewModel : ViewModel() {
             days += DayInfo(
                 index,
                 "TestTitle: $index",
-                LocalDateTime.now().plusDays(index.toLong()),
+                LocalDateTime.now().minusDays(((index + 1) * 250).toLong()),
                 displayMode
             )
         }
