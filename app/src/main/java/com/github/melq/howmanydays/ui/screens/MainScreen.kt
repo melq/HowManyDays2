@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -102,7 +101,6 @@ private fun DayItemRow(
             Text(
                 text = dayInfo.title,
                 fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.primary
             )
             Row(
                 modifier = Modifier
@@ -123,7 +121,6 @@ private fun DayItemRow(
                             .alignByBaseline()
                             .padding(horizontal = 4.dp),
                         fontSize = 48.sp,
-                        color = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = when (dayInfo.displayMode) {
@@ -134,14 +131,12 @@ private fun DayItemRow(
                         },
                         modifier = modifier.alignByBaseline(),
                         fontSize = 24.sp,
-                        color = MaterialTheme.colorScheme.primary
                     )
                 }
                 Text(
                     text = dayInfo.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                     modifier = modifier.alignByBaseline(),
                     fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
