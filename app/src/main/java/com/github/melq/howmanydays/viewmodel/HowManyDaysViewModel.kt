@@ -49,6 +49,11 @@ class HowManyDaysViewModel : ViewModel() {
 
     fun upsertDayInfo(dayInfo: DayInfo) {
         Log.d("upsertDayInfo", dayInfo.toString())
+        if (dayInfo.id == -1) {
+            dayInfos += dayInfo
+        } else {
+            dayInfos[dayInfo.id] = dayInfo
+        }
     }
 
     fun getDayInfos(): List<DayInfo> {
@@ -60,7 +65,7 @@ class HowManyDaysViewModel : ViewModel() {
     }
 
     // todo: 削除する
-    private fun initDayInfos(): List<DayInfo> {
+    private fun initDayInfos(): MutableList<DayInfo> {
         val days = emptyList<DayInfo>().toMutableList()
         val displayModes = DisplayMode.entries.toTypedArray()
         for ((index, displayMode) in displayModes.withIndex()) {
