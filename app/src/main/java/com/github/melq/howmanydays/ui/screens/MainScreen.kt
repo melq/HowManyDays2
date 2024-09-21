@@ -32,7 +32,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun MainScreen(
     modifier: Modifier,
-    viewModel: HowManyDaysViewModel = viewModel(),
+    viewModel: HowManyDaysViewModel,
     onNavigateToEdit: (EditMode) -> Unit
 ) {
     HowManyDaysTheme {
@@ -47,7 +47,10 @@ fun MainScreen(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(16.dp),
-                    onClick = { onNavigateToEdit(EditMode.Add) }) {
+                    onClick = {
+                        viewModel.clearSelectedDayInfo()
+                        onNavigateToEdit(EditMode.Add)
+                    }) {
                     Icon(Icons.Filled.Add, "Add")
                 }
             }
@@ -64,7 +67,7 @@ private fun DayInfosList(
     val dayInfos = viewModel.getDayInfos()
     LazyColumn {
         items(dayInfos) { dayInfo ->
-            DayItemRow(modifier = modifier, dayInfo = dayInfo) {
+            DayItemRow(modifier = modifier, viewModel = viewModel, dayInfo = dayInfo) {
                 onNavigateToEdit(EditMode.Edit)
             }
             HorizontalDivider(
@@ -80,12 +83,16 @@ private fun DayInfosList(
 @Composable
 private fun DayItemRow(
     modifier: Modifier = Modifier,
+    viewModel: HowManyDaysViewModel,
     dayInfo: DayInfo,
     onNavigateToEdit: (EditMode) -> Unit
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        onClick = { onNavigateToEdit(EditMode.Edit) }) {
+        onClick = {
+            viewModel.setSelectedDayInfo(dayInfo)
+            onNavigateToEdit(EditMode.Edit)
+        }) {
         Column(
             modifier = modifier
                 .padding(8.dp)
@@ -109,7 +116,7 @@ private fun DayItemRow(
 fun DaysListPreview() {
     HowManyDaysTheme {
         Surface {
-            MainScreen(modifier = Modifier, onNavigateToEdit = {})
+            MainScreen(modifier = Modifier, viewModel = viewModel(), onNavigateToEdit = {})
         }
     }
 }

@@ -14,6 +14,8 @@ class HowManyDaysViewModel : ViewModel() {
     private val _selectedDayInfo =
         mutableStateOf(DayInfo("", LocalDateTime.now(), DisplayMode.DAYS))
 
+    private var dayInfos = initDayInfos()
+
     val title: State<String> = _title
     val date: State<LocalDateTime> = _date
     val displayMode: State<DisplayMode> = _displayMode
@@ -35,13 +37,25 @@ class HowManyDaysViewModel : ViewModel() {
         _selectedDayInfo.value = dayInfo
     }
 
+    fun clearSelectedDayInfo() {
+        _selectedDayInfo.value = DayInfo("", LocalDateTime.now(), DisplayMode.DAYS)
+    }
+
     fun setParametersByDayInfo(dayInfo: DayInfo) {
         setTitle(dayInfo.title)
         setDate(dayInfo.date)
         setDisplayMode(dayInfo.displayMode)
     }
 
+    fun upsertDayInfo(dayInfo: DayInfo) {
+        setTitle("aaa")
+    }
+
     fun getDayInfos(): List<DayInfo> {
+        return dayInfos
+    }
+
+    private fun initDayInfos(): List<DayInfo> {
         val days = emptyList<DayInfo>().toMutableList()
         val displayModes = DisplayMode.entries.toTypedArray()
         for ((index, displayMode) in displayModes.withIndex()) {
@@ -52,9 +66,5 @@ class HowManyDaysViewModel : ViewModel() {
             )
         }
         return days
-    }
-
-    fun upsertDayInfo(dayInfo: DayInfo) {
-        setTitle("aaa")
     }
 }

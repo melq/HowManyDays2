@@ -17,6 +17,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,7 +40,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun EditScreen(
     modifier: Modifier,
-    viewModel: HowManyDaysViewModel = viewModel(),
+    viewModel: HowManyDaysViewModel,
     mode: EditMode = EditMode.Add,
     onNavigateToMain: () -> Unit
 ) {
@@ -57,7 +58,6 @@ fun EditScreen(
                     onNavigateToMain = onNavigateToMain,
                     executeUpsertDayInfo = { upsertDayInfo(viewModel, editedDayInfo) }
                 )
-                Text(text = mode.toString())
             }
         }
     }
@@ -70,7 +70,9 @@ fun editForm(
     viewModel: HowManyDaysViewModel,
     dayInfo: DayInfo
 ): DayInfo {
-    viewModel.setParametersByDayInfo(dayInfo)
+    LaunchedEffect(dayInfo) {
+        viewModel.setParametersByDayInfo(dayInfo)
+    }
     val title by viewModel.title
     val date by viewModel.date
     val displayMode by viewModel.displayMode
@@ -199,5 +201,9 @@ fun upsertDayInfo(viewModel: HowManyDaysViewModel, dayInfo: DayInfo) {
 @Preview
 @Composable
 fun EditScreenPreview() {
-    EditScreen(modifier = Modifier, mode = EditMode.Edit, onNavigateToMain = {})
+    EditScreen(
+        modifier = Modifier,
+        viewModel = viewModel(),
+        mode = EditMode.Edit,
+        onNavigateToMain = {})
 }
