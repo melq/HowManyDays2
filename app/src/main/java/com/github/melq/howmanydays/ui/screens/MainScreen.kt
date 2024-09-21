@@ -31,13 +31,17 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun MainScreen(
-    viewModel: HowManyDaysViewModel = viewModel(),
     modifier: Modifier,
+    viewModel: HowManyDaysViewModel = viewModel(),
     onNavigateToEdit: (EditMode) -> Unit
 ) {
     HowManyDaysTheme {
         Surface {
-            DayInfosList(viewModel, modifier, onNavigateToEdit)
+            DayInfosList(
+                modifier = modifier,
+                viewModel = viewModel,
+                onNavigateToEdit = onNavigateToEdit
+            )
             Box(modifier = modifier.fillMaxSize()) {
                 FloatingActionButton(
                     modifier = Modifier
@@ -53,14 +57,14 @@ fun MainScreen(
 
 @Composable
 private fun DayInfosList(
-    viewModel: HowManyDaysViewModel,
     modifier: Modifier = Modifier,
+    viewModel: HowManyDaysViewModel,
     onNavigateToEdit: (EditMode) -> Unit
 ) {
     val dayInfos = viewModel.getDayInfos()
     LazyColumn {
         items(dayInfos) { dayInfo ->
-            DayItemRow(dayInfo, modifier) {
+            DayItemRow(modifier = modifier, dayInfo = dayInfo) {
                 onNavigateToEdit(EditMode.Edit)
             }
             HorizontalDivider(
@@ -75,8 +79,8 @@ private fun DayInfosList(
 
 @Composable
 private fun DayItemRow(
-    dayInfo: DayInfo,
     modifier: Modifier = Modifier,
+    dayInfo: DayInfo,
     onNavigateToEdit: (EditMode) -> Unit
 ) {
     Surface(

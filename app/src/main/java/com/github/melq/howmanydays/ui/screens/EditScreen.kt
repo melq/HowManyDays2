@@ -38,8 +38,8 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun EditScreen(
-    viewModel: HowManyDaysViewModel = viewModel(),
     modifier: Modifier,
+    viewModel: HowManyDaysViewModel = viewModel(),
     mode: EditMode = EditMode.Add,
     onNavigateToMain: () -> Unit
 ) {
@@ -66,8 +66,8 @@ fun EditScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun editForm(
-    viewModel: HowManyDaysViewModel,
     modifier: Modifier,
+    viewModel: HowManyDaysViewModel,
     dayInfo: DayInfo
 ): DayInfo {
     viewModel.setParametersByDayInfo(dayInfo)
@@ -154,8 +154,7 @@ fun editForm(
         }
     }
 
-    val dayInfo = DayInfo(title, date, displayMode)
-    return dayInfo
+    return DayInfo(title, date, displayMode)
 }
 
 @Composable
