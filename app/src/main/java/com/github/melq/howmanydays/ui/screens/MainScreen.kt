@@ -25,8 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.github.melq.howmanydays.data.DayInfo
 import com.github.melq.howmanydays.data.DisplayMode
+import com.github.melq.howmanydays.data.entity.DayInfo
 import com.github.melq.howmanydays.ui.theme.HowManyDaysTheme
 import com.github.melq.howmanydays.viewmodel.HowManyDaysViewModel
 import java.time.format.DateTimeFormatter

@@ -4,13 +4,14 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.github.melq.howmanydays.data.DayInfo
 import com.github.melq.howmanydays.data.DisplayMode
+import com.github.melq.howmanydays.data.entity.DayInfo
+import com.github.melq.howmanydays.data.repository.DayInfoRepository
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
-class HowManyDaysViewModel : ViewModel() {
+class HowManyDaysViewModel(private val dayInfoRepository: DayInfoRepository) : ViewModel() {
     private val _title = mutableStateOf("")
     private val _date = mutableStateOf(LocalDateTime.now())
     private val _displayMode = mutableStateOf(DisplayMode.DAYS)
