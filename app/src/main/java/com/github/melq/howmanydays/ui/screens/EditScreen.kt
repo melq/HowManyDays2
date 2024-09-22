@@ -89,7 +89,9 @@ fun editForm(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent
         ),
-        modifier = modifier.padding(8.dp),
+        modifier = modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
     )
     val state = rememberDatePickerState(
         initialSelectedDateMillis = Instant.now().toEpochMilli()
@@ -140,9 +142,17 @@ fun editForm(
                 }
             }
         },
-        modifier = modifier.padding(8.dp)
+        modifier = modifier
+            .padding(8.dp)
+            .fillMaxWidth()
     )
 
+    Text(
+        text = "DisplayMode",
+        fontSize = 12.sp,
+        modifier = modifier.padding(start = 24.dp, top = 10.dp),
+        color = TextFieldDefaults.colors().unfocusedLabelColor
+    )
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {

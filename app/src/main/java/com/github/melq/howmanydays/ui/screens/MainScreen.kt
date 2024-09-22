@@ -96,7 +96,7 @@ private fun DayItemRow(
         }) {
         Column(
             modifier = modifier
-                .padding(8.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Text(
                 text = dayInfo.title,
