@@ -1,28 +1,30 @@
 package com.github.melq.howmanydays.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.github.melq.howmanydays.data.DisplayMode
 import com.github.melq.howmanydays.data.entity.DayInfo
-import com.github.melq.howmanydays.data.repository.DayInfoRepository
+import com.github.melq.howmanydays.data.repository.interfaces.IDayInfoRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
-class HowManyDaysViewModel(private val dayInfoRepository: DayInfoRepository) : ViewModel() {
+class HowManyDaysViewModel(private val dayInfoRepository: IDayInfoRepository) : ViewModel() {
     private val _title = mutableStateOf("")
     private val _date = mutableStateOf(LocalDateTime.now())
     private val _displayMode = mutableStateOf(DisplayMode.DAYS)
     private val _selectedDayInfo = mutableStateOf(null as DayInfo?)
-
-    private var dayInfos = initDayInfos()
+    private val _dayInfos = mutableStateOf(emptyList<DayInfo>())
 
     val title: State<String> = _title
     val date: State<LocalDateTime> = _date
     val displayMode: State<DisplayMode> = _displayMode
     val selectedDayInfo: State<DayInfo?> = _selectedDayInfo
+    val dayInfos: State<List<DayInfo>> = _dayInfos
 
     fun setTitle(title: String) {
         _title.value = title
@@ -50,19 +52,6 @@ class HowManyDaysViewModel(private val dayInfoRepository: DayInfoRepository) : V
         setDisplayMode(dayInfo.displayMode)
     }
 
-    fun upsertDayInfo(dayInfo: DayInfo) {
-        Log.d("upsertDayInfo", dayInfo.toString())
-        if (dayInfo.id == -1) {
-            dayInfos += dayInfo
-        } else {
-            dayInfos[dayInfo.id] = dayInfo
-        }
-    }
-
-    fun getDayInfos(): List<DayInfo> {
-        return dayInfos
-    }
-
     fun getCurrentDayInfoId(): Int {
         return _selectedDayInfo.value?.id ?: -1
     }
@@ -79,18 +68,20 @@ class HowManyDaysViewModel(private val dayInfoRepository: DayInfoRepository) : V
         }
     }
 
-    // todo: 削除する
-    private fun initDayInfos(): MutableList<DayInfo> {
-        val days = emptyList<DayInfo>().toMutableList()
-        val displayModes = DisplayMode.entries.toTypedArray()
-        for ((index, displayMode) in displayModes.withIndex()) {
-            days += DayInfo(
-                index,
-                "TestTitle: $index",
-                LocalDateTime.now().minusDays(((index + 1) * 250).toLong()),
-                displayMode
-            )
+    fun fetchDayInfos() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _dayInfos.value = dayInfoRepository.getAllDayInfos()
         }
-        return days
+    }
+
+    suspend fun upsertDayInfo(dayInfo: DayInfo) {
+        if (dayInfo.id == -1)
+            dayInfoRepository.insertDayInfo(dayInfo)
+        else
+            dayInfoRepository.updateDayInfo(dayInfo)
+    }
+
+    suspend fun deleteDayInfo(dayInfo: DayInfo) {
+        dayInfoRepository.deleteDayInfo(dayInfo)
     }
 }

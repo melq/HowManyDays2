@@ -21,6 +21,7 @@ import com.github.melq.howmanydays.ui.screens.MainScreen
 import com.github.melq.howmanydays.ui.screens.ScreenNames
 import com.github.melq.howmanydays.ui.theme.HowManyDaysTheme
 import com.github.melq.howmanydays.viewmodel.HowManyDaysViewModel
+import com.github.melq.howmanydays.viewmodel.HowManyDaysViewModelProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,7 +49,10 @@ fun HowManyDaysApp(
                         route = ScreenNames.MainScreen.name
                     ) {
                         val viewModel: HowManyDaysViewModel =
-                            viewModel(LocalContext.current as ComponentActivity)
+                            viewModel(
+                                LocalContext.current as ComponentActivity,
+                                factory = HowManyDaysViewModelProvider.Factory
+                            )
                         MainScreen(
                             modifier = Modifier,
                             viewModel = viewModel,
@@ -62,7 +66,10 @@ fun HowManyDaysApp(
                         arguments = listOf(navArgument("mode") { NavType.StringType })
                     ) { backStackEntry ->
                         val viewModel: HowManyDaysViewModel =
-                            viewModel(LocalContext.current as ComponentActivity)
+                            viewModel(
+                                LocalContext.current as ComponentActivity,
+                                factory = HowManyDaysViewModelProvider.Factory
+                            )
                         EditScreen(
                             modifier = Modifier,
                             viewModel = viewModel,

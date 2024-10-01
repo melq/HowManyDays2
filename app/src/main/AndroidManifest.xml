@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HowManyDays"
+        android:name=".HowManyDaysApplication"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"

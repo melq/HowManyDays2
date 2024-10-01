@@ -21,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,11 +29,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.melq.howmanydays.data.DisplayMode
 import com.github.melq.howmanydays.data.entity.DayInfo
 import com.github.melq.howmanydays.ui.theme.HowManyDaysTheme
 import com.github.melq.howmanydays.viewmodel.HowManyDaysViewModel
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -63,9 +66,10 @@ fun EditScreen(
                 )
                 Buttons(
                     modifier = modifier,
+                    viewModel = viewModel,
                     mode = mode,
+                    editedDayInfo = editedDayInfo,
                     onNavigateToMain = onNavigateToMain,
-                    executeUpsertDayInfo = { upsertDayInfo(viewModel, editedDayInfo) }
                 )
             }
         }
@@ -177,10 +181,12 @@ fun editForm(
 @Composable
 fun Buttons(
     modifier: Modifier,
+    viewModel: HowManyDaysViewModel,
+    editedDayInfo: DayInfo,
     mode: EditMode,
-    onNavigateToMain: () -> Unit,
-    executeUpsertDayInfo: () -> Unit
+    onNavigateToMain: () -> Unit
 ) {
+    val coroutineScope = rememberCoroutineScope()
     Row(horizontalArrangement = Arrangement.End, modifier = modifier.fillMaxWidth()) {
         TextButton(onClick = {
             onNavigateToMain()
@@ -189,27 +195,32 @@ fun Buttons(
         }
         if (mode == EditMode.Add) {
             TextButton(onClick = {
-                executeUpsertDayInfo()
-                onNavigateToMain()
+                coroutineScope.launch {
+                    viewModel.upsertDayInfo(editedDayInfo)
+                    onNavigateToMain()
+                }
             }) {
                 Text(text = "登録")
             }
         } else {
-            TextButton(onClick = { onNavigateToMain() }) {
+            TextButton(onClick = {
+                coroutineScope.launch {
+                    viewModel.deleteDayInfo(viewModel.selectedDayInfo.value!!)
+                    onNavigateToMain()
+                }
+            }) {
                 Text(text = "削除")
             }
             TextButton(onClick = {
-                executeUpsertDayInfo()
-                onNavigateToMain()
+                coroutineScope.launch {
+                    viewModel.upsertDayInfo(editedDayInfo)
+                    onNavigateToMain()
+                }
             }) {
                 Text(text = "更新")
             }
         }
     }
-}
-
-fun upsertDayInfo(viewModel: HowManyDaysViewModel, dayInfo: DayInfo) {
-    viewModel.upsertDayInfo(dayInfo)
 }
 
 @Preview
