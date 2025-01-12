@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -187,6 +188,21 @@ fun Buttons(
     onNavigateToMain: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
+    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
+
+    if (showConfirmDeleteDialog) {
+        ConfirmDeleteDialog(
+            onConfirm = {
+                showConfirmDeleteDialog = false
+                coroutineScope.launch {
+                    viewModel.deleteDayInfo(viewModel.selectedDayInfo.value!!)
+                    onNavigateToMain()
+                }
+            },
+            onDismiss = { showConfirmDeleteDialog = false }
+        )
+    }
+
     Row(horizontalArrangement = Arrangement.End, modifier = modifier.fillMaxWidth()) {
         TextButton(onClick = {
             onNavigateToMain()
@@ -204,10 +220,7 @@ fun Buttons(
             }
         } else {
             TextButton(onClick = {
-                coroutineScope.launch {
-                    viewModel.deleteDayInfo(viewModel.selectedDayInfo.value!!)
-                    onNavigateToMain()
-                }
+                showConfirmDeleteDialog = true
             }) {
                 Text(text = "削除")
             }
@@ -221,6 +234,28 @@ fun Buttons(
             }
         }
     }
+}
+
+@Composable
+fun ConfirmDeleteDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(text = "削除しますか？") },
+        text = { Text(text = "削除すると元に戻せません。") },
+        confirmButton = {
+            TextButton(onClick = { onConfirm() }) {
+                Text(text = "削除")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text(text = "キャンセル")
+            }
+        }
+    )
 }
 
 @Preview
