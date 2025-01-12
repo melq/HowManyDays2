@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.melq.howmanydays.data.Const.Companion.NEW_DAY_INFO_ID
 import com.github.melq.howmanydays.data.DisplayMode
 import com.github.melq.howmanydays.data.entity.DayInfo
 import com.github.melq.howmanydays.data.repository.interfaces.IDayInfoRepository
@@ -53,7 +54,7 @@ class HowManyDaysViewModel(private val dayInfoRepository: IDayInfoRepository) : 
     }
 
     fun getCurrentDayInfoId(): Int {
-        return _selectedDayInfo.value?.id ?: -1
+        return _selectedDayInfo.value?.id ?: NEW_DAY_INFO_ID
     }
 
     fun calculateElapsedTime(date: LocalDateTime, displayMode: DisplayMode): Long {
