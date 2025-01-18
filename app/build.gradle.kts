@@ -71,5 +71,6 @@ dependencies {
     implementation(kotlin("script-runtime"))
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.work.runtime.ktx)
     ksp(libs.androidx.room.compiler)
 }
