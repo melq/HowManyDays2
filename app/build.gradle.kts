@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.github.melq.howmanydays"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.github.melq.howmanydays"

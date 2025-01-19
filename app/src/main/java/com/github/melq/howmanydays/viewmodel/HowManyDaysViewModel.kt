@@ -10,9 +10,7 @@ import com.github.melq.howmanydays.data.entity.DayInfo
 import com.github.melq.howmanydays.data.repository.interfaces.IDayInfoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.Duration
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 
 class HowManyDaysViewModel(private val dayInfoRepository: IDayInfoRepository) : ViewModel() {
     private val _title = mutableStateOf("")
@@ -55,18 +53,6 @@ class HowManyDaysViewModel(private val dayInfoRepository: IDayInfoRepository) : 
 
     fun getCurrentDayInfoId(): Int {
         return _selectedDayInfo.value?.id ?: NEW_DAY_INFO_ID
-    }
-
-    fun calculateElapsedTime(date: LocalDateTime, displayMode: DisplayMode): Long {
-        val now = LocalDateTime.now()
-        val duration = Duration.between(date, now)
-
-        return when (displayMode) {
-            DisplayMode.DAYS -> duration.toDays()
-            DisplayMode.WEEKS -> duration.toDays() / 7
-            DisplayMode.MONTHS -> ChronoUnit.MONTHS.between(date, now)
-            DisplayMode.YEARS -> ChronoUnit.YEARS.between(date, now)
-        }
     }
 
     fun fetchDayInfos() {
