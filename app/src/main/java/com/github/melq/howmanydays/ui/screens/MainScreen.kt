@@ -30,6 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.melq.howmanydays.data.DisplayMode
 import com.github.melq.howmanydays.data.entity.DayInfo
 import com.github.melq.howmanydays.ui.theme.HowManyDaysTheme
+import com.github.melq.howmanydays.utils.ElapsedTimeCalculator.Companion.calculateElapsedTime
 import com.github.melq.howmanydays.viewmodel.HowManyDaysViewModel
 import java.time.format.DateTimeFormatter
 
@@ -118,7 +119,7 @@ private fun DayItemRow(
                     modifier = modifier.alignByBaseline()
                 ) {
                     Text(
-                        text = viewModel.calculateElapsedTime(
+                        text = calculateElapsedTime(
                             dayInfo.date,
                             dayInfo.displayMode
                         ).toString(),

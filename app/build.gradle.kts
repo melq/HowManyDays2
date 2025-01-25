@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.github.melq.howmanydays"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.github.melq.howmanydays"
@@ -71,5 +71,6 @@ dependencies {
     implementation(kotlin("script-runtime"))
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.work.runtime.ktx)
     ksp(libs.androidx.room.compiler)
 }
