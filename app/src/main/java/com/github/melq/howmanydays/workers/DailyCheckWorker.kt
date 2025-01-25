@@ -23,11 +23,22 @@ class DailyCheckWorker(
 ) : CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result {
         val dayInfoRepository = appDataContainer.dayInfoRepository
+        val notifiedRepository = appDataContainer.notifiedRepository
         val dayInfos = dayInfoRepository.getAllDayInfos()
 
         for (dayInfo in dayInfos) {
             val elapsedTime = calculateElapsedTime(dayInfo.date, dayInfo.displayMode)
-            if (checkElapsedTime(elapsedTime, dayInfo.displayMode))
+            val notifiedList = notifiedRepository.getNotifiedListByDayInfoId(dayInfo.id)
+
+            var isNotified = false
+            for (notified in notifiedList) {
+                if (notified.milestone == elapsedTime && dayInfo.displayMode == notified.displayMode) {
+                    isNotified = true
+                    break
+                }
+            }
+
+            if (isMilestoneReached(elapsedTime, dayInfo.displayMode) && !isNotified) {
                 sendNotification(
                     "HowManyDays",
                     "${dayInfo.title}から${elapsedTime}" +
@@ -40,11 +51,20 @@ class DailyCheckWorker(
                                 }
                             }が経過しました！"
                 )
+                notifiedRepository.insertNotified(
+                    dayInfo.id,
+                    dayInfo.displayMode,
+                    elapsedTime
+                )
+            }
         }
         return Result.success()
     }
 
-    private fun checkElapsedTime(elapsedTime: Long, displayMode: DisplayMode): Boolean {
+    private fun isMilestoneReached(
+        elapsedTime: Long,
+        displayMode: DisplayMode
+    ): Boolean {
         return when (displayMode) {
             DisplayMode.DAYS -> Const.Companion.TimeMilestones.DaysMilestones.contains(elapsedTime)
             DisplayMode.WEEKS -> Const.Companion.TimeMilestones.WeeksMilestones.contains(elapsedTime)
