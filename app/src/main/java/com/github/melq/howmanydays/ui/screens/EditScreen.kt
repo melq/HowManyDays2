@@ -169,7 +169,7 @@ fun editForm(
                 },
             )
             Text(
-                text = entry.toString(),
+                text = entry.label,
                 modifier = modifier
                     .align(Alignment.CenterVertically)
             )

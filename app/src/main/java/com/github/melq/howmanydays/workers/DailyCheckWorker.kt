@@ -42,14 +42,7 @@ class DailyCheckWorker(
                 sendNotification(
                     "HowManyDays",
                     "${dayInfo.title}から${elapsedTime}" +
-                            "${
-                                when (dayInfo.displayMode) {
-                                    DisplayMode.DAYS -> "日"
-                                    DisplayMode.WEEKS -> "週"
-                                    DisplayMode.MONTHS -> "ヶ月"
-                                    DisplayMode.YEARS -> "年"
-                                }
-                            }が経過しました！"
+                            "${dayInfo.displayMode.label}が経過しました！"
                 )
                 notifiedRepository.insertNotified(
                     dayInfo.id,
