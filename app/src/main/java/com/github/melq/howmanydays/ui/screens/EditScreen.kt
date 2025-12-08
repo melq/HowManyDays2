@@ -36,21 +36,21 @@ import com.github.melq.howmanydays.data.DisplayMode
 import com.github.melq.howmanydays.data.entity.DayInfo
 import com.github.melq.howmanydays.ui.theme.HowManyDaysTheme
 import com.github.melq.howmanydays.viewmodel.HowManyDaysViewModel
-import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.launch
 
 @Composable
 fun EditScreen(
-    modifier: Modifier,
-    viewModel: HowManyDaysViewModel,
-    mode: EditMode,
-    onNavigateToMain: () -> Unit
+        modifier: Modifier,
+        viewModel: HowManyDaysViewModel,
+        mode: EditMode,
+        onNavigateToMain: () -> Unit
 ) {
     LaunchedEffect(mode) {
         if (mode == EditMode.Edit && viewModel.selectedDayInfo.value != null)
-            viewModel.setParametersByDayInfo(viewModel.selectedDayInfo.value!!)
+                viewModel.setParametersByDayInfo(viewModel.selectedDayInfo.value!!)
         else {
             viewModel.clearSelectedDayInfo()
             viewModel.setTitle("")
@@ -61,16 +61,17 @@ fun EditScreen(
     HowManyDaysTheme {
         Surface {
             Column {
-                val editedDayInfo = editForm(
-                    modifier = modifier,
-                    viewModel = viewModel,
-                )
+                val editedDayInfo =
+                        editForm(
+                                modifier = modifier,
+                                viewModel = viewModel,
+                        )
                 Buttons(
-                    modifier = modifier,
-                    viewModel = viewModel,
-                    mode = mode,
-                    editedDayInfo = editedDayInfo,
-                    onNavigateToMain = onNavigateToMain,
+                        modifier = modifier,
+                        viewModel = viewModel,
+                        mode = mode,
+                        editedDayInfo = editedDayInfo,
+                        onNavigateToMain = onNavigateToMain,
                 )
             }
         }
@@ -80,99 +81,83 @@ fun EditScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun editForm(
-    modifier: Modifier,
-    viewModel: HowManyDaysViewModel,
+        modifier: Modifier,
+        viewModel: HowManyDaysViewModel,
 ): DayInfo {
     val title by viewModel.title
     val date by viewModel.date
     val displayMode by viewModel.displayMode
     TextField(
-        value = title,
-        onValueChange = { viewModel.setTitle(it) },
-        label = { Text("Title") },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent
-        ),
-        modifier = modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
+            value = title,
+            onValueChange = { viewModel.setTitle(it) },
+            label = { Text("Title") },
+            colors =
+                    TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent
+                    ),
+            modifier = modifier.padding(8.dp).fillMaxWidth(),
     )
-    val state = rememberDatePickerState(
-        initialSelectedDateMillis = Instant.now().toEpochMilli()
-    )
+    val state = rememberDatePickerState(initialSelectedDateMillis = Instant.now().toEpochMilli())
     var visible by remember { mutableStateOf(false) }
     if (visible) {
         DatePickerDialog(
-            onDismissRequest = {
-                visible = false
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        visible = false
-                        viewModel.setDate(
-                            LocalDateTime.ofInstant(
-                                Instant.ofEpochMilli(
-                                    state.selectedDateMillis ?: Instant.now().toEpochMilli()
-                                ),
-                                java.util.TimeZone.getDefault().toZoneId()
-                            )
-                        )
-                    },
-                    modifier = modifier.padding(8.dp)
-                ) {
-                    Text(stringResource(android.R.string.ok))
-                }
-            },
-        ) {
-            DatePicker(state)
-        }
+                onDismissRequest = { visible = false },
+                confirmButton = {
+                    TextButton(
+                            onClick = {
+                                visible = false
+                                viewModel.setDate(
+                                        LocalDateTime.ofInstant(
+                                                Instant.ofEpochMilli(
+                                                        state.selectedDateMillis
+                                                                ?: Instant.now().toEpochMilli()
+                                                ),
+                                                java.util.TimeZone.getDefault().toZoneId()
+                                        )
+                                )
+                            },
+                            modifier = modifier.padding(8.dp)
+                    ) { Text(stringResource(android.R.string.ok)) }
+                },
+        ) { DatePicker(state) }
     }
     TextField(
-        value = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-        onValueChange = {},
-        label = { Text("Date") },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent
-        ),
-        readOnly = true,
-        trailingIcon = {
-            Box {
-                TextButton(
-                    onClick = { visible = true },
-                ) {
-                    Text("編集")
+            value = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+            onValueChange = {},
+            label = { Text("Date") },
+            colors =
+                    TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent
+                    ),
+            readOnly = true,
+            trailingIcon = {
+                Box {
+                    TextButton(
+                            onClick = { visible = true },
+                    ) { Text("編集") }
                 }
-            }
-        },
-        modifier = modifier
-            .padding(8.dp)
-            .fillMaxWidth()
+            },
+            modifier = modifier.padding(8.dp).fillMaxWidth()
     )
 
     Text(
-        text = "DisplayMode",
-        fontSize = 12.sp,
-        modifier = modifier.padding(start = 24.dp, top = 10.dp),
-        color = TextFieldDefaults.colors().unfocusedLabelColor
+            text = "DisplayMode",
+            fontSize = 12.sp,
+            modifier = modifier.padding(start = 24.dp, top = 20.dp),
+            color = TextFieldDefaults.colors().unfocusedLabelColor
     )
     Row(
-        verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier.padding(start = 10.dp)
     ) {
         for (entry in DisplayMode.entries) {
             RadioButton(
-                selected = displayMode == entry,
-                onClick = {
-                    viewModel.setDisplayMode(entry)
-                },
+                    selected = displayMode == entry,
+                    onClick = { viewModel.setDisplayMode(entry) },
             )
-            Text(
-                text = entry.label,
-                modifier = modifier
-                    .align(Alignment.CenterVertically)
-            )
+            Text(text = entry.label, modifier = modifier.align(Alignment.CenterVertically))
         }
     }
 
@@ -181,80 +166,61 @@ fun editForm(
 
 @Composable
 fun Buttons(
-    modifier: Modifier,
-    viewModel: HowManyDaysViewModel,
-    editedDayInfo: DayInfo,
-    mode: EditMode,
-    onNavigateToMain: () -> Unit
+        modifier: Modifier,
+        viewModel: HowManyDaysViewModel,
+        editedDayInfo: DayInfo,
+        mode: EditMode,
+        onNavigateToMain: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     var showConfirmDeleteDialog by remember { mutableStateOf(false) }
 
     if (showConfirmDeleteDialog) {
         ConfirmDeleteDialog(
-            onConfirm = {
-                showConfirmDeleteDialog = false
-                coroutineScope.launch {
-                    viewModel.deleteDayInfo(viewModel.selectedDayInfo.value!!)
-                    onNavigateToMain()
-                }
-            },
-            onDismiss = { showConfirmDeleteDialog = false }
+                onConfirm = {
+                    showConfirmDeleteDialog = false
+                    coroutineScope.launch {
+                        viewModel.deleteDayInfo(viewModel.selectedDayInfo.value!!)
+                        onNavigateToMain()
+                    }
+                },
+                onDismiss = { showConfirmDeleteDialog = false }
         )
     }
 
     Row(horizontalArrangement = Arrangement.End, modifier = modifier.fillMaxWidth()) {
-        TextButton(onClick = {
-            onNavigateToMain()
-        }) {
-            Text(text = "キャンセル")
-        }
+        TextButton(onClick = { onNavigateToMain() }) { Text(text = "キャンセル") }
         if (mode == EditMode.Add) {
-            TextButton(onClick = {
-                coroutineScope.launch {
-                    viewModel.upsertDayInfo(editedDayInfo)
-                    onNavigateToMain()
-                }
-            }) {
-                Text(text = "登録")
-            }
+            TextButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.upsertDayInfo(editedDayInfo)
+                            onNavigateToMain()
+                        }
+                    }
+            ) { Text(text = "登録") }
         } else {
-            TextButton(onClick = {
-                showConfirmDeleteDialog = true
-            }) {
-                Text(text = "削除")
-            }
-            TextButton(onClick = {
-                coroutineScope.launch {
-                    viewModel.upsertDayInfo(editedDayInfo)
-                    onNavigateToMain()
-                }
-            }) {
-                Text(text = "更新")
-            }
+            TextButton(onClick = { showConfirmDeleteDialog = true }) { Text(text = "削除") }
+            TextButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.upsertDayInfo(editedDayInfo)
+                            onNavigateToMain()
+                        }
+                    }
+            ) { Text(text = "更新") }
         }
     }
 }
 
 @Composable
-fun ConfirmDeleteDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
-) {
+fun ConfirmDeleteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
-        onDismissRequest = { onDismiss() },
-        title = { Text(text = "削除しますか？") },
-        text = { Text(text = "削除すると元に戻せません。") },
-        confirmButton = {
-            TextButton(onClick = { onConfirm() }) {
-                Text(text = "削除")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = { onDismiss() }) {
-                Text(text = "キャンセル")
-            }
-        }
+            onDismissRequest = { onDismiss() },
+            title = { Text(text = "削除しますか？") },
+            text = { Text(text = "削除すると元に戻せません。") },
+            confirmButton = { TextButton(onClick = { onConfirm() }) { Text(text = "削除") } },
+            dismissButton = { TextButton(onClick = { onDismiss() }) { Text(text = "キャンセル") } }
     )
 }
 
@@ -262,8 +228,9 @@ fun ConfirmDeleteDialog(
 @Composable
 fun EditScreenPreview() {
     EditScreen(
-        modifier = Modifier,
-        viewModel = viewModel(),
-        mode = EditMode.Edit,
-        onNavigateToMain = {})
+            modifier = Modifier,
+            viewModel = viewModel(),
+            mode = EditMode.Edit,
+            onNavigateToMain = {}
+    )
 }

@@ -27,7 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.github.melq.howmanydays.data.DisplayMode
 import com.github.melq.howmanydays.data.entity.DayInfo
 import com.github.melq.howmanydays.ui.theme.HowManyDaysTheme
 import com.github.melq.howmanydays.utils.ElapsedTimeCalculator.Companion.calculateElapsedTime
@@ -36,27 +35,22 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun MainScreen(
-    modifier: Modifier,
-    viewModel: HowManyDaysViewModel,
-    onNavigateToEdit: (EditMode) -> Unit
+        modifier: Modifier,
+        viewModel: HowManyDaysViewModel,
+        onNavigateToEdit: (EditMode) -> Unit
 ) {
     HowManyDaysTheme {
         Surface {
             DayInfosList(
-                modifier = modifier,
-                viewModel = viewModel,
-                onNavigateToEdit = onNavigateToEdit
+                    modifier = modifier,
+                    viewModel = viewModel,
+                    onNavigateToEdit = onNavigateToEdit
             )
             Box(modifier = modifier.fillMaxSize()) {
                 FloatingActionButton(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp),
-                    onClick = {
-                        onNavigateToEdit(EditMode.Add)
-                    }) {
-                    Icon(Icons.Filled.Add, "Add")
-                }
+                        modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+                        onClick = { onNavigateToEdit(EditMode.Add) }
+                ) { Icon(Icons.Filled.Add, "Add") }
             }
         }
     }
@@ -64,13 +58,11 @@ fun MainScreen(
 
 @Composable
 private fun DayInfosList(
-    modifier: Modifier = Modifier,
-    viewModel: HowManyDaysViewModel,
-    onNavigateToEdit: (EditMode) -> Unit
+        modifier: Modifier = Modifier,
+        viewModel: HowManyDaysViewModel,
+        onNavigateToEdit: (EditMode) -> Unit
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.fetchDayInfos()
-    }
+    LaunchedEffect(Unit) { viewModel.fetchDayInfos() }
     val dayInfos by viewModel.dayInfos
     LazyColumn {
         items(dayInfos) { dayInfo ->
@@ -78,10 +70,8 @@ private fun DayInfosList(
                 onNavigateToEdit(EditMode.Edit)
             }
             HorizontalDivider(
-                modifier = Modifier
-                    .height(1.dp)
-                    .padding(8.dp, 0.dp),
-                color = Color.Gray
+                    modifier = Modifier.height(1.dp).padding(8.dp, 0.dp),
+                    color = Color.Gray
             )
         }
     }
@@ -89,60 +79,46 @@ private fun DayInfosList(
 
 @Composable
 private fun DayItemRow(
-    modifier: Modifier = Modifier,
-    viewModel: HowManyDaysViewModel,
-    dayInfo: DayInfo,
-    onNavigateToEdit: (EditMode) -> Unit
+        modifier: Modifier = Modifier,
+        viewModel: HowManyDaysViewModel,
+        dayInfo: DayInfo,
+        onNavigateToEdit: (EditMode) -> Unit
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
-        onClick = {
-            viewModel.setSelectedDayInfo(dayInfo)
-            onNavigateToEdit(EditMode.Edit)
-        }) {
-        Column(
-            modifier = modifier
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
+            modifier = modifier.fillMaxWidth(),
+            onClick = {
+                viewModel.setSelectedDayInfo(dayInfo)
+                onNavigateToEdit(EditMode.Edit)
+            }
+    ) {
+        Column(modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
             Text(
-                text = dayInfo.title,
-                fontSize = 20.sp,
+                    text = dayInfo.title,
+                    fontSize = 20.sp,
             )
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom
+                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
             ) {
-                Row(
-                    modifier = modifier.alignByBaseline()
-                ) {
+                Row(modifier = modifier.alignByBaseline()) {
                     Text(
-                        text = calculateElapsedTime(
-                            dayInfo.date,
-                            dayInfo.displayMode
-                        ).toString(),
-                        modifier = modifier
-                            .alignByBaseline()
-                            .padding(horizontal = 4.dp),
-                        fontSize = 48.sp,
+                            text =
+                                    calculateElapsedTime(dayInfo.date, dayInfo.displayMode)
+                                            .toString(),
+                            modifier = modifier.alignByBaseline().padding(horizontal = 4.dp),
+                            fontSize = 48.sp,
                     )
                     Text(
-                        text = when (dayInfo.displayMode) {
-                            DisplayMode.DAYS -> "日"
-                            DisplayMode.WEEKS -> "週"
-                            DisplayMode.MONTHS -> "月"
-                            DisplayMode.YEARS -> "年"
-                        },
-                        modifier = modifier.alignByBaseline(),
-                        fontSize = 24.sp,
+                            text = dayInfo.displayMode.label,
+                            modifier = modifier.alignByBaseline(),
+                            fontSize = 24.sp,
                     )
                 }
                 Text(
-                    text = dayInfo.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                    modifier = modifier.alignByBaseline(),
-                    fontSize = 20.sp,
+                        text = dayInfo.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                        modifier = modifier.alignByBaseline(),
+                        fontSize = 20.sp,
                 )
             }
         }
@@ -153,8 +129,6 @@ private fun DayItemRow(
 @Composable
 fun DaysListPreview() {
     HowManyDaysTheme {
-        Surface {
-            MainScreen(modifier = Modifier, viewModel = viewModel(), onNavigateToEdit = {})
-        }
+        Surface { MainScreen(modifier = Modifier, viewModel = viewModel(), onNavigateToEdit = {}) }
     }
 }
