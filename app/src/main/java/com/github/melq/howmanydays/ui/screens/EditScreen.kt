@@ -157,7 +157,7 @@ fun editForm(
                     selected = displayMode == entry,
                     onClick = { viewModel.setDisplayMode(entry) },
             )
-            Text(text = entry.label, modifier = modifier.align(Alignment.CenterVertically))
+            Text(text = entry.label)
         }
     }
 
