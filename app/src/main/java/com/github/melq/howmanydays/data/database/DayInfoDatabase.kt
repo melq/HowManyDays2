@@ -13,15 +13,10 @@ import com.github.melq.howmanydays.data.entity.Converters
 import com.github.melq.howmanydays.data.entity.DayInfo
 import com.github.melq.howmanydays.data.entity.Milestone
 
-@Database(
-        entities = [DayInfo::class, Notified::class, Milestone::class],
-        version = 3,
-        exportSchema = false
-)
+@Database(entities = [DayInfo::class, Milestone::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class DayInfoDatabase : RoomDatabase() {
     abstract fun dayInfoDao(): DayInfoDao
-    abstract fun notifiedDao(): NotifiedDao
     abstract fun milestoneDao(): MilestoneDao
 
     companion object {

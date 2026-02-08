@@ -12,61 +12,34 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.github.melq.howmanydays.R
 import com.github.melq.howmanydays.data.AppDataContainer
-import com.github.melq.howmanydays.data.Const
-import com.github.melq.howmanydays.data.DisplayMode
 import com.github.melq.howmanydays.utils.ElapsedTimeCalculator.Companion.calculateElapsedTime
 
 class DailyCheckWorker(
-    appContext: Context,
-    workerParams: WorkerParameters,
-    private val appDataContainer: AppDataContainer
+        appContext: Context,
+        workerParams: WorkerParameters,
+        private val appDataContainer: AppDataContainer
 ) : CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result {
         val dayInfoRepository = appDataContainer.dayInfoRepository
-        val notifiedRepository = appDataContainer.notifiedRepository
+        val milestoneRepository = appDataContainer.milestoneRepository
         val dayInfos = dayInfoRepository.getAllDayInfos()
 
         for (dayInfo in dayInfos) {
             val elapsedTime = calculateElapsedTime(dayInfo.date, dayInfo.displayMode)
-            val notifiedList = notifiedRepository.getNotifiedListByDayInfoId(dayInfo.id)
+            val milestones = milestoneRepository.getListByDayInfoId(dayInfo.id)
 
-            var isNotified = false
-            for (notified in notifiedList) {
-                if (notified.milestone == elapsedTime && dayInfo.displayMode == notified.displayMode) {
-                    isNotified = true
-                    break
+            for (milestone in milestones) {
+                if (milestone.value == elapsedTime && !milestone.isNotified) {
+                    sendNotification(
+                            "HowManyDays",
+                            "${dayInfo.title}から${elapsedTime}" +
+                                    "${dayInfo.displayMode.label}が経過しました！"
+                    )
+                    milestoneRepository.update(milestone.copy(isNotified = true))
                 }
-            }
-
-            if (isMilestoneReached(elapsedTime, dayInfo.displayMode) && !isNotified) {
-                sendNotification(
-                    "HowManyDays",
-                    "${dayInfo.title}から${elapsedTime}" +
-                            "${dayInfo.displayMode.label}が経過しました！"
-                )
-                notifiedRepository.insertNotified(
-                    dayInfo.id,
-                    dayInfo.displayMode,
-                    elapsedTime
-                )
             }
         }
         return Result.success()
-    }
-
-    private fun isMilestoneReached(
-        elapsedTime: Long,
-        displayMode: DisplayMode
-    ): Boolean {
-        return when (displayMode) {
-            DisplayMode.DAYS -> Const.Companion.TimeMilestones.DaysMilestones.contains(elapsedTime)
-            DisplayMode.WEEKS -> Const.Companion.TimeMilestones.WeeksMilestones.contains(elapsedTime)
-            DisplayMode.MONTHS -> Const.Companion.TimeMilestones.MonthsMilestones.contains(
-                elapsedTime
-            )
-
-            DisplayMode.YEARS -> Const.Companion.TimeMilestones.YearsMilestones.contains(elapsedTime)
-        }
     }
 
     private fun sendNotification(title: String, message: String) {
@@ -74,21 +47,22 @@ class DailyCheckWorker(
         val notificationId = title.hashCode()
 
         val channel =
-            NotificationChannel(channelId, "Reminder", NotificationManager.IMPORTANCE_DEFAULT)
+                NotificationChannel(channelId, "Reminder", NotificationManager.IMPORTANCE_DEFAULT)
         val manager = applicationContext.getSystemService(NotificationManager::class.java)
         manager.createNotificationChannel(channel)
 
-        val builder = NotificationCompat.Builder(applicationContext, channelId)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setSmallIcon(R.drawable.howmanydays_round_icon)
-            .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        val builder =
+                NotificationCompat.Builder(applicationContext, channelId)
+                        .setContentTitle(title)
+                        .setContentText(message)
+                        .setSmallIcon(R.drawable.howmanydays_round_icon)
+                        .setAutoCancel(true)
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
         if (ContextCompat.checkSelfPermission(
-                applicationContext,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
+                        applicationContext,
+                        Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
         ) {
             with(NotificationManagerCompat.from(applicationContext)) {
                 notify(notificationId, builder.build())
