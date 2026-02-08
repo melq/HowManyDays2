@@ -3,10 +3,10 @@ package com.github.melq.howmanydays.data
 import android.content.Context
 import com.github.melq.howmanydays.data.database.DayInfoDatabase
 import com.github.melq.howmanydays.data.repository.DayInfoRepository
+import com.github.melq.howmanydays.data.repository.IDayInfoRepository
 import com.github.melq.howmanydays.data.repository.IMilestoneRepository
 import com.github.melq.howmanydays.data.repository.MilestoneRepository
 import com.github.melq.howmanydays.data.repository.NotifiedRepository
-import com.github.melq.howmanydays.data.repository.interfaces.IDayInfoRepository
 import com.github.melq.howmanydays.data.repository.interfaces.INotifiedRepository
 
 interface AppContainer {

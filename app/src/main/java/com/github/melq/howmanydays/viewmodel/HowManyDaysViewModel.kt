@@ -9,8 +9,8 @@ import com.github.melq.howmanydays.data.Const.Companion.NEW_DAY_INFO_ID
 import com.github.melq.howmanydays.data.DisplayMode
 import com.github.melq.howmanydays.data.entity.DayInfo
 import com.github.melq.howmanydays.data.entity.Milestone
+import com.github.melq.howmanydays.data.repository.IDayInfoRepository
 import com.github.melq.howmanydays.data.repository.IMilestoneRepository
-import com.github.melq.howmanydays.data.repository.interfaces.IDayInfoRepository
 import java.time.LocalDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
