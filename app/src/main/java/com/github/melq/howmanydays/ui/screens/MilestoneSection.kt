@@ -27,6 +27,7 @@ import com.github.melq.howmanydays.viewmodel.HowManyDaysViewModel
 @Composable
 fun MilestoneSection(viewModel: HowManyDaysViewModel, modifier: Modifier = Modifier) {
     var newValue by remember { mutableStateOf("") }
+    var isError by remember { mutableStateOf(false) }
     val milestones = viewModel.milestones
 
     Text(
@@ -38,8 +39,13 @@ fun MilestoneSection(viewModel: HowManyDaysViewModel, modifier: Modifier = Modif
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         TextField(
                 value = newValue,
-                onValueChange = { newValue = it },
+                onValueChange = {
+                    newValue = it
+                    isError = false
+                },
                 label = { Text("経過時間") },
+                isError = isError,
+                supportingText = { if (isError) Text("数値を入力してください") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.weight(1f)
         )
@@ -49,6 +55,9 @@ fun MilestoneSection(viewModel: HowManyDaysViewModel, modifier: Modifier = Modif
                     if (value != null) {
                         viewModel.addMilestone(value)
                         newValue = ""
+                        isError = false
+                    } else {
+                        isError = true
                     }
                 }
         ) { Icon(Icons.Default.Add, contentDescription = "Add Milestone") }
