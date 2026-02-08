@@ -10,6 +10,7 @@ import com.github.melq.howmanydays.data.repository.interfaces.INotifiedRepositor
 interface AppContainer {
     val dayInfoRepository: IDayInfoRepository
     val notifiedRepository: INotifiedRepository
+    val notificationSettingsRepository: NotificationSettingsRepository
 }
 
 class AppDataContainer(private val context: Context) : AppContainer {
@@ -18,5 +19,8 @@ class AppDataContainer(private val context: Context) : AppContainer {
     }
     override val notifiedRepository: INotifiedRepository by lazy {
         NotifiedRepository(DayInfoDatabase.getDatabase(context).notifiedDao())
+    }
+    override val notificationSettingsRepository: NotificationSettingsRepository by lazy {
+        NotificationSettingsRepository(context)
     }
 }
