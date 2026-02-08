@@ -11,6 +11,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -59,20 +60,32 @@ fun EditScreen(
         }
     }
     HowManyDaysTheme {
-        Surface {
-            Column {
-                val editedDayInfo =
-                        editForm(
-                                modifier = modifier,
-                                viewModel = viewModel,
-                        )
-                Buttons(
-                        modifier = modifier,
-                        viewModel = viewModel,
-                        mode = mode,
-                        editedDayInfo = editedDayInfo,
-                        onNavigateToMain = onNavigateToMain,
-                )
+        Scaffold(
+                bottomBar = {
+                    val editedDayInfo =
+                            DayInfo(
+                                    viewModel.getCurrentDayInfoId(),
+                                    viewModel.title.value,
+                                    viewModel.date.value,
+                                    viewModel.displayMode.value
+                            )
+
+                    Buttons(
+                            modifier = Modifier.padding(16.dp),
+                            viewModel = viewModel,
+                            mode = mode,
+                            editedDayInfo = editedDayInfo,
+                            onNavigateToMain = onNavigateToMain,
+                    )
+                }
+        ) { innerPadding ->
+            Surface {
+                Column(modifier = Modifier.padding(innerPadding)) {
+                    editForm(
+                            modifier = modifier,
+                            viewModel = viewModel,
+                    )
+                }
             }
         }
     }
@@ -83,7 +96,7 @@ fun EditScreen(
 fun editForm(
         modifier: Modifier,
         viewModel: HowManyDaysViewModel,
-): DayInfo {
+) {
     val title by viewModel.title
     val date by viewModel.date
     val displayMode by viewModel.displayMode
@@ -161,9 +174,7 @@ fun editForm(
         }
     }
 
-    MilestoneSection(viewModel = viewModel, modifier = modifier.padding(8.dp))
-
-    return DayInfo(viewModel.getCurrentDayInfoId(), title, date, displayMode)
+    MilestoneSection(viewModel = viewModel)
 }
 
 @Composable
