@@ -14,7 +14,6 @@ class MainActivity : ComponentActivity() {
     private val requestPermissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) {
                     isGranted: Boolean ->
-                // 権限の結果によって処理を分けることができますが、今回は特に何もしません
             }
 
     override fun onCreate(savedInstanceState: Bundle?) {
