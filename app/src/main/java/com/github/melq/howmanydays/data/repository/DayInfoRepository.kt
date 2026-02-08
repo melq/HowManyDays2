@@ -18,8 +18,8 @@ class DayInfoRepository(private val dayInfoDao: DayInfoDao) : IDayInfoRepository
         return dayInfoDao.getAllDayInfos()
     }
 
-    override suspend fun insertDayInfo(dayInfo: DayInfo) {
-        dayInfoDao.insertDayInfo(dayInfo.title, dayInfo.date, dayInfo.displayMode.name)
+    override suspend fun insertDayInfo(dayInfo: DayInfo): Long {
+        return dayInfoDao.insertDayInfo(dayInfo.title, dayInfo.date, dayInfo.displayMode.name)
     }
 
     override suspend fun updateDayInfo(dayInfo: DayInfo) {
