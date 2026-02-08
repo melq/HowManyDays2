@@ -1,0 +1,7 @@
+開発ブランチは必ずorigin/developから作成すること
+
+Pull Requestは必ずorigin/developに対して行うこと
+
+実行中の思考や操作内容などは日本語で書くこと
+
+実装計画、Issue、Commit、PRのメッセージは日本語で書くこと
