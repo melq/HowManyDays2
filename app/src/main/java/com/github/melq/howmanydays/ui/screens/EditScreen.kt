@@ -161,6 +161,8 @@ fun editForm(
         }
     }
 
+    MilestoneSection(viewModel = viewModel, modifier = modifier.padding(8.dp))
+
     return DayInfo(viewModel.getCurrentDayInfoId(), title, date, displayMode)
 }
 
@@ -194,7 +196,7 @@ fun Buttons(
             TextButton(
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.upsertDayInfo(editedDayInfo)
+                            viewModel.saveDayInfoWithMilestones(editedDayInfo)
                             onNavigateToMain()
                         }
                     }
@@ -204,7 +206,7 @@ fun Buttons(
             TextButton(
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.upsertDayInfo(editedDayInfo)
+                            viewModel.saveDayInfoWithMilestones(editedDayInfo)
                             onNavigateToMain()
                         }
                     }

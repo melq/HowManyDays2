@@ -1,23 +1,34 @@
 package com.github.melq.howmanydays.viewmodel
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.melq.howmanydays.data.Const.Companion.NEW_DAY_INFO_ID
 import com.github.melq.howmanydays.data.DisplayMode
 import com.github.melq.howmanydays.data.entity.DayInfo
+import com.github.melq.howmanydays.data.entity.Milestone
+import com.github.melq.howmanydays.data.repository.IMilestoneRepository
 import com.github.melq.howmanydays.data.repository.interfaces.IDayInfoRepository
+import java.time.LocalDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 
-class HowManyDaysViewModel(private val dayInfoRepository: IDayInfoRepository) : ViewModel() {
+class HowManyDaysViewModel(
+        private val dayInfoRepository: IDayInfoRepository,
+        private val milestoneRepository: IMilestoneRepository
+) : ViewModel() {
     private val _title = mutableStateOf("")
     private val _date = mutableStateOf(LocalDateTime.now())
     private val _displayMode = mutableStateOf(DisplayMode.DAYS)
     private val _selectedDayInfo = mutableStateOf(null as DayInfo?)
     private val _dayInfos = mutableStateOf(emptyList<DayInfo>())
+
+    private val _milestones = mutableStateListOf<Milestone>()
+    val milestones: List<Milestone>
+        get() = _milestones
+    private val _deletedMilestones = mutableListOf<Milestone>()
 
     val title: State<String> = _title
     val date: State<LocalDateTime> = _date
@@ -43,12 +54,15 @@ class HowManyDaysViewModel(private val dayInfoRepository: IDayInfoRepository) : 
 
     fun clearSelectedDayInfo() {
         _selectedDayInfo.value = null
+        _milestones.clear()
+        _deletedMilestones.clear()
     }
 
     fun setParametersByDayInfo(dayInfo: DayInfo) {
         setTitle(dayInfo.title)
         setDate(dayInfo.date)
         setDisplayMode(dayInfo.displayMode)
+        fetchMilestones(dayInfo.id)
     }
 
     fun getCurrentDayInfoId(): Int {
@@ -61,11 +75,45 @@ class HowManyDaysViewModel(private val dayInfoRepository: IDayInfoRepository) : 
         }
     }
 
-    suspend fun upsertDayInfo(dayInfo: DayInfo) {
-        if (dayInfo.id == -1)
-            dayInfoRepository.insertDayInfo(dayInfo)
-        else
-            dayInfoRepository.updateDayInfo(dayInfo)
+    private fun fetchMilestones(dayInfoId: Int) {
+        viewModelScope.launch {
+            _milestones.clear()
+            _deletedMilestones.clear()
+            _milestones.addAll(milestoneRepository.getListByDayInfoId(dayInfoId))
+        }
+    }
+
+    fun addMilestone(value: Long) {
+        _milestones.add(Milestone(dayInfoId = getCurrentDayInfoId(), value = value))
+    }
+
+    fun deleteMilestone(milestone: Milestone) {
+        if (milestone.id != 0) {
+            _deletedMilestones.add(milestone)
+        }
+        _milestones.remove(milestone)
+    }
+
+    suspend fun saveDayInfoWithMilestones(dayInfo: DayInfo) {
+        val dayInfoId =
+                if (dayInfo.id == -1) {
+                    dayInfoRepository.insertDayInfo(dayInfo).toInt()
+                } else {
+                    dayInfoRepository.updateDayInfo(dayInfo)
+                    dayInfo.id
+                }
+
+        _deletedMilestones.forEach { milestoneRepository.delete(it) }
+        _deletedMilestones.clear()
+
+        _milestones.forEach { milestone ->
+            if (milestone.id == 0) {
+                milestoneRepository.insert(milestone.copy(dayInfoId = dayInfoId))
+            } else {
+                milestoneRepository.update(milestone)
+            }
+        }
+        fetchDayInfos()
     }
 
     suspend fun deleteDayInfo(dayInfo: DayInfo) {
