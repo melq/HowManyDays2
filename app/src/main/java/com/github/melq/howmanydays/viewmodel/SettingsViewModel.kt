@@ -16,14 +16,14 @@ class SettingsViewModel(
                 notificationSettingsRepository.notificationHour.stateIn(
                         scope = viewModelScope,
                         started = SharingStarted.WhileSubscribed(5000),
-                        initialValue = 9
+                        initialValue = -1
                 )
 
         val notificationMinute: StateFlow<Int> =
                 notificationSettingsRepository.notificationMinute.stateIn(
                         scope = viewModelScope,
                         started = SharingStarted.WhileSubscribed(5000),
-                        initialValue = 0
+                        initialValue = -1
                 )
 
         fun saveNotificationTime(hour: Int, minute: Int) {
