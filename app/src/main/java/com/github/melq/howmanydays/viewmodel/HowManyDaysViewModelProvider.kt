@@ -9,8 +9,10 @@ import com.github.melq.howmanydays.HowManyDaysApplication
 object HowManyDaysViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
+            val container = howManyDaysApplication().container
             HowManyDaysViewModel(
-                    dayInfoRepository = howManyDaysApplication().container.dayInfoRepository
+                    dayInfoRepository = container.dayInfoRepository,
+                    milestoneRepository = container.milestoneRepository
             )
         }
         initializer {
