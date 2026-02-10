@@ -15,6 +15,12 @@ object HowManyDaysViewModelProvider {
                     milestoneRepository = container.milestoneRepository
             )
         }
+        initializer {
+            SettingsViewModel(
+                    notificationSettingsRepository =
+                            howManyDaysApplication().container.notificationSettingsRepository
+            )
+        }
     }
 }
 
