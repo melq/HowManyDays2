@@ -1,4 +1,4 @@
-package com.github.melq.howmanydays.data
+package com.github.melq.howmanydays.data.repository
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -11,19 +11,26 @@ import kotlinx.coroutines.flow.map
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
-class NotificationSettingsRepository(private val context: Context) {
+interface INotificationSettingsRepository {
+    val notificationHour: Flow<Int>
+    val notificationMinute: Flow<Int>
+    suspend fun saveNotificationTime(hour: Int, minute: Int)
+}
+
+class NotificationSettingsRepository(private val context: Context) :
+        INotificationSettingsRepository {
     companion object {
         val HOUR = intPreferencesKey("notification_hour")
         val MINUTE = intPreferencesKey("notification_minute")
     }
 
-    val notificationHour: Flow<Int> =
+    override val notificationHour: Flow<Int> =
             context.dataStore.data.map { preferences -> preferences[HOUR] ?: 9 }
 
-    val notificationMinute: Flow<Int> =
+    override val notificationMinute: Flow<Int> =
             context.dataStore.data.map { preferences -> preferences[MINUTE] ?: 0 }
 
-    suspend fun saveNotificationTime(hour: Int, minute: Int) {
+    override suspend fun saveNotificationTime(hour: Int, minute: Int) {
         context.dataStore.edit { preferences ->
             preferences[HOUR] = hour
             preferences[MINUTE] = minute

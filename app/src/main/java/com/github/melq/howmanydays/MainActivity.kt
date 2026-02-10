@@ -12,9 +12,7 @@ import androidx.core.content.ContextCompat
 
 class MainActivity : ComponentActivity() {
     private val requestPermissionLauncher =
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-                    isGranted: Boolean ->
-            }
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
