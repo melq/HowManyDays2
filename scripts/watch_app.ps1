@@ -27,6 +27,8 @@ Write-Host "Watching for changes in $WatcherSource..."
 Write-Host "Press Ctrl+C to stop."
 
 try {
+    # Invoke run_app.ps1
+    & "$PSScriptRoot\run_app.ps1"
     while ($true) {
         # Wait for a change event (Timeout 1000ms to allow loop to check other things if needed)
         $Result = $Watcher.WaitForChanged([System.IO.WatcherChangeTypes]::All, 1000)
