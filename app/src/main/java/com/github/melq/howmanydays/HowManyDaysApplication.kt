@@ -36,11 +36,13 @@ class HowManyDaysApplication : Application(), Configuration.Provider {
     private fun observeNotificationSettings() {
         scope.launch {
             val repository = container.notificationSettingsRepository
-            repository.notificationHour
-                    .combine(repository.notificationMinute) { hour, minute -> Pair(hour, minute) }
-                    .collect { (hour, minute) ->
-                        scheduleDailyCheck(this@HowManyDaysApplication, hour, minute)
-                    }
+            repository.notificationSettings.collect { settings ->
+                if (settings.isEnabled) {
+                    scheduleDailyCheck(this@HowManyDaysApplication, settings.hour, settings.minute)
+                } else {
+                    WorkManager.getInstance(this@HowManyDaysApplication).cancelUniqueWork("DailyCheckWork")
+                }
+            }
         }
     }
 

@@ -28,7 +28,7 @@ fun SettingsScreen(onNavigateToNotificationTime: () -> Unit) {
                         }
                         item {
                                 SettingItem(
-                                        title = "通知時間の設定",
+                                        title = "通知の設定",
                                         onClick = onNavigateToNotificationTime
                                 )
                                 HorizontalDivider()
