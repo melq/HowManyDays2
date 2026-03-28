@@ -10,11 +10,17 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.Switch
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,10 +29,9 @@ import com.github.melq.howmanydays.viewmodel.SettingsViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationTimeSettingScreen(viewModel: SettingsViewModel, onNavigateBack: () -> Unit) {
-        val hour by viewModel.notificationHour.collectAsState()
-        val minute by viewModel.notificationMinute.collectAsState()
+        val settingsState by viewModel.notificationSettings.collectAsState()
 
-        if (hour < 0 || minute < 0) {
+        val currentSettings = settingsState ?: run {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                 }
@@ -34,13 +39,27 @@ fun NotificationTimeSettingScreen(viewModel: SettingsViewModel, onNavigateBack: 
         }
 
         val timePickerState =
-                rememberTimePickerState(initialHour = hour, initialMinute = minute, is24Hour = true)
+                rememberTimePickerState(initialHour = currentSettings.hour, initialMinute = currentSettings.minute, is24Hour = true)
+
+        var currentIsEnabled by remember(currentSettings.isEnabled) { mutableStateOf(currentSettings.isEnabled) }
 
         Column(
                 modifier = Modifier.fillMaxSize().padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
         ) {
+                Row(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                ) {
+                        Text("通知を有効にする", style = MaterialTheme.typography.bodyLarge)
+                        Switch(
+                                checked = currentIsEnabled,
+                                onCheckedChange = { currentIsEnabled = it }
+                        )
+                }
+
                 Text(
                         text = "通知時間の指定",
                         style = MaterialTheme.typography.headlineMedium,
@@ -51,9 +70,10 @@ fun NotificationTimeSettingScreen(viewModel: SettingsViewModel, onNavigateBack: 
 
                 Button(
                         onClick = {
-                                viewModel.saveNotificationTime(
+                                viewModel.saveNotificationSettings(
                                         timePickerState.hour,
-                                        timePickerState.minute
+                                        timePickerState.minute,
+                                        currentIsEnabled
                                 )
                                 onNavigateBack()
                         },
