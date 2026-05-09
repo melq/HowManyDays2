@@ -14,7 +14,7 @@ class ElapsedTimeCalculatorTest {
     @Test
     fun calculateElapsedTime_days() {
         val date = LocalDateTime.of(2023, 1, 1, 0, 0)
-        val now = LocalDateTime.of(2023, 1, 10, 12, 0) // 9.5 days later
+        val now = LocalDateTime.of(2023, 1, 10, 12, 0)
         val result = ElapsedTimeCalculator.calculateElapsedTime(date, DisplayMode.DAYS, now)
         assertEquals(9L, result)
     }
@@ -37,7 +37,7 @@ class ElapsedTimeCalculatorTest {
     @Test
     fun calculateElapsedTime_weeks() {
         val date = LocalDateTime.of(2023, 1, 1, 0, 0)
-        val now = LocalDateTime.of(2023, 1, 22, 12, 0) // 21.5 days later -> 3 weeks
+        val now = LocalDateTime.of(2023, 1, 22, 12, 0)
         val result = ElapsedTimeCalculator.calculateElapsedTime(date, DisplayMode.WEEKS, now)
         assertEquals(3L, result)
     }
@@ -48,7 +48,7 @@ class ElapsedTimeCalculatorTest {
     @Test
     fun calculateElapsedTime_weeks_lessThanOneWeek() {
         val date = LocalDateTime.of(2023, 1, 1, 0, 0)
-        val now = LocalDateTime.of(2023, 1, 7, 23, 59) // 6日と23時間59分経過
+        val now = LocalDateTime.of(2023, 1, 7, 23, 59)
         val result = ElapsedTimeCalculator.calculateElapsedTime(date, DisplayMode.WEEKS, now)
         assertEquals(0L, result)
     }
@@ -60,7 +60,7 @@ class ElapsedTimeCalculatorTest {
     @Test
     fun calculateElapsedTime_months() {
         val date = LocalDateTime.of(2023, 1, 15, 0, 0)
-        val now = LocalDateTime.of(2023, 3, 20, 12, 0) // 2 months and a few days
+        val now = LocalDateTime.of(2023, 3, 20, 12, 0)
         val result = ElapsedTimeCalculator.calculateElapsedTime(date, DisplayMode.MONTHS, now)
         assertEquals(2L, result)
     }
@@ -72,7 +72,7 @@ class ElapsedTimeCalculatorTest {
     @Test
     fun calculateElapsedTime_months_boundary() {
         val date = LocalDateTime.of(2023, 1, 1, 0, 0)
-        val now = LocalDateTime.of(2023, 1, 31, 23, 59) // 1ヶ月未満
+        val now = LocalDateTime.of(2023, 1, 31, 23, 59)
         val result = ElapsedTimeCalculator.calculateElapsedTime(date, DisplayMode.MONTHS, now)
         assertEquals(0L, result)
     }
@@ -84,7 +84,7 @@ class ElapsedTimeCalculatorTest {
     @Test
     fun calculateElapsedTime_years() {
         val date = LocalDateTime.of(2020, 5, 1, 0, 0)
-        val now = LocalDateTime.of(2023, 6, 1, 12, 0) // 3 years and 1 month
+        val now = LocalDateTime.of(2023, 6, 1, 12, 0)
         val result = ElapsedTimeCalculator.calculateElapsedTime(date, DisplayMode.YEARS, now)
         assertEquals(3L, result)
     }
@@ -95,8 +95,8 @@ class ElapsedTimeCalculatorTest {
      */
     @Test
     fun calculateElapsedTime_years_boundary() {
-        val date = LocalDateTime.of(2020, 2, 29, 0, 0) // 閏年
-        val now = LocalDateTime.of(2021, 2, 28, 23, 59) // 1年未満
+        val date = LocalDateTime.of(2020, 2, 29, 0, 0)
+        val now = LocalDateTime.of(2021, 2, 28, 23, 59)
         val result = ElapsedTimeCalculator.calculateElapsedTime(date, DisplayMode.YEARS, now)
         assertEquals(0L, result)
     }
@@ -108,8 +108,8 @@ class ElapsedTimeCalculatorTest {
     @Test
     fun calculateElapsedTime_futureDate() {
         val date = LocalDateTime.of(2023, 2, 1, 0, 0)
-        val now = LocalDateTime.of(2023, 1, 1, 12, 0) // Before the date
+        val now = LocalDateTime.of(2023, 1, 1, 12, 0)
         val result = ElapsedTimeCalculator.calculateElapsedTime(date, DisplayMode.DAYS, now)
-        assertEquals(-30L, result) // -30 days
+        assertEquals(-30L, result)
     }
 }
