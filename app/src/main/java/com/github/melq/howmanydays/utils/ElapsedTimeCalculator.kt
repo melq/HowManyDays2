@@ -7,8 +7,7 @@ import java.time.temporal.ChronoUnit
 
 class ElapsedTimeCalculator {
     companion object {
-        fun calculateElapsedTime(date: LocalDateTime, displayMode: DisplayMode): Long {
-            val now = LocalDateTime.now()
+        fun calculateElapsedTime(date: LocalDateTime, displayMode: DisplayMode, now: LocalDateTime = LocalDateTime.now()): Long {
             val duration = Duration.between(date, now)
 
             return when (displayMode) {
