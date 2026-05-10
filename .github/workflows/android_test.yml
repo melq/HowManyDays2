@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ "develop", "main" ]
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   unit-test:
     name: Run Unit Tests & Lint
@@ -36,7 +33,7 @@ jobs:
 
   instrumentation-test:
     name: Run UI Tests
-    runs-on: macos-latest # AndroidエミュレータをNative(ARM)で爆速で動かすためM1 Macを指定
+    runs-on: macos-latest
     timeout-minutes: 45
 
     steps:
