@@ -7,8 +7,8 @@ on:
     branches: [ "develop", "main" ]
 
 jobs:
-  test:
-    name: Run Unit Tests
+  unit-test:
+    name: Run Unit Tests & Lint
     runs-on: ubuntu-latest
 
     steps:
@@ -30,3 +30,31 @@ jobs:
 
       - name: Run Android Lint
         run: ./gradlew lint
+
+  instrumentation-test:
+    name: Run UI Tests
+    runs-on: macos-latest # Androidエミュレータの安定動作のためmacOSを使用
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run Android UI tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: default
+          arch: x86_64
+          profile: Nexus 6
+          script: ./gradlew connectedCheck --stacktrace
