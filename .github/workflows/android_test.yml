@@ -33,7 +33,7 @@ jobs:
 
   instrumentation-test:
     name: Run UI Tests
-    runs-on: macos-latest # Androidエミュレータの安定動作のためmacOSを使用
+    runs-on: macos-13 # Androidエミュレータ(x86_64)のハードウェアアクセラレーションを使うため、Intel Mac (macos-13) を指定
     timeout-minutes: 45
 
     steps:
