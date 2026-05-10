@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ "develop", "main" ]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   unit-test:
     name: Run Unit Tests & Lint
@@ -33,7 +36,7 @@ jobs:
 
   instrumentation-test:
     name: Run UI Tests
-    runs-on: macos-13 # Androidエミュレータ(x86_64)のハードウェアアクセラレーションを使うため、Intel Mac (macos-13) を指定
+    runs-on: macos-latest # AndroidエミュレータをNative(ARM)で爆速で動かすためM1 Macを指定
     timeout-minutes: 45
 
     steps:
@@ -55,7 +58,7 @@ jobs:
         with:
           api-level: 29
           target: default
-          arch: x86_64
+          arch: arm64-v8a
           profile: Nexus 6
           disable-animations: true
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
