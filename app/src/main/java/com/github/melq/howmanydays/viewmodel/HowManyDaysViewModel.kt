@@ -94,7 +94,13 @@ class HowManyDaysViewModel(
         _milestones.remove(milestone)
     }
 
-    suspend fun saveDayInfoWithMilestones(dayInfo: DayInfo) {
+    suspend fun saveDayInfoWithMilestones() {
+        val dayInfo = DayInfo(
+                id = getCurrentDayInfoId(),
+                title = _title.value,
+                date = _date.value,
+                displayMode = _displayMode.value
+        )
         val dayInfoId =
                 if (dayInfo.id == -1) {
                     dayInfoRepository.insertDayInfo(dayInfo).toInt()
@@ -116,7 +122,9 @@ class HowManyDaysViewModel(
         fetchDayInfos()
     }
 
-    suspend fun deleteDayInfo(dayInfo: DayInfo) {
-        dayInfoRepository.deleteDayInfo(dayInfo)
+    suspend fun deleteDayInfo() {
+        _selectedDayInfo.value?.let {
+            dayInfoRepository.deleteDayInfo(it)
+        }
     }
 }

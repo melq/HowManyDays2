@@ -40,38 +40,34 @@ fun HowManyDaysApp() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
 
+                val isMainScreen = currentRoute == ScreenNames.MainScreen.name
+
                 Scaffold(
                         topBar = {
-                                TopAppBar(
-                                        title = {
-                                                Text(
-                                                        text = "HowManyDays",
-                                                )
-                                        },
-                                        actions = {
-                                                IconButton(
-                                                        onClick = {
-                                                                navController.navigate(
-                                                                        ScreenNames.SettingsScreen
-                                                                                .name
-                                                                )
-                                                        },
-                                                        enabled =
-                                                                currentRoute !=
-                                                                        ScreenNames.SettingsScreen
-                                                                                .name &&
-                                                                        currentRoute !=
-                                                                                ScreenNames
-                                                                                        .NotificationTimeSettingScreen
-                                                                                        .name
-                                                ) {
-                                                        Icon(
-                                                                Icons.Filled.Settings,
-                                                                contentDescription = "Settings"
+                                if (isMainScreen) {
+                                        TopAppBar(
+                                                title = {
+                                                        Text(
+                                                                text = "HowManyDays",
                                                         )
+                                                },
+                                                actions = {
+                                                        IconButton(
+                                                                onClick = {
+                                                                        navController.navigate(
+                                                                                ScreenNames.SettingsScreen
+                                                                                        .name
+                                                                        )
+                                                                }
+                                                        ) {
+                                                                Icon(
+                                                                        Icons.Filled.Settings,
+                                                                        contentDescription = "Settings"
+                                                                )
+                                                        }
                                                 }
-                                        }
-                                )
+                                        )
+                                }
                         },
                         content = { padding ->
                                 NavHost(

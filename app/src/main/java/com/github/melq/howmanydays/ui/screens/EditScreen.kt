@@ -7,13 +7,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -43,6 +50,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditScreen(
         modifier: Modifier,
@@ -61,23 +69,47 @@ fun EditScreen(
         }
     }
     HowManyDaysTheme {
+        val coroutineScope = rememberCoroutineScope()
+        var showConfirmDeleteDialog by remember { mutableStateOf(false) }
+
+        if (showConfirmDeleteDialog) {
+            ConfirmDeleteDialog(
+                    onConfirm = {
+                        showConfirmDeleteDialog = false
+                        coroutineScope.launch {
+                            viewModel.deleteDayInfo()
+                            onNavigateToMain()
+                        }
+                    },
+                    onDismiss = { showConfirmDeleteDialog = false }
+            )
+        }
+
         Scaffold(
                 contentWindowInsets = WindowInsets(0, 0, 0, 0),
-                bottomBar = {
-                    val editedDayInfo =
-                            DayInfo(
-                                    viewModel.getCurrentDayInfoId(),
-                                    viewModel.title.value,
-                                    viewModel.date.value,
-                                    viewModel.displayMode.value
-                            )
-
-                    Buttons(
-                            modifier = Modifier.padding(16.dp),
-                            viewModel = viewModel,
-                            mode = mode,
-                            editedDayInfo = editedDayInfo,
-                            onNavigateToMain = onNavigateToMain,
+                topBar = {
+                    TopAppBar(
+                            title = { Text(if (mode == EditMode.Edit) "編集" else "登録") },
+                            navigationIcon = {
+                                IconButton(onClick = onNavigateToMain) {
+                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "キャンセル")
+                                }
+                            },
+                            actions = {
+                                if (mode == EditMode.Edit) {
+                                    IconButton(onClick = { showConfirmDeleteDialog = true }) {
+                                        Icon(Icons.Filled.Delete, contentDescription = "削除")
+                                    }
+                                }
+                                IconButton(onClick = {
+                                    coroutineScope.launch {
+                                        viewModel.saveDayInfoWithMilestones()
+                                        onNavigateToMain()
+                                    }
+                                }) {
+                                    Icon(Icons.Filled.Check, contentDescription = "保存")
+                                }
+                            }
                     )
                 }
         ) { innerPadding ->
@@ -177,55 +209,6 @@ fun editForm(
     }
 
     MilestoneSection(viewModel = viewModel)
-}
-
-@Composable
-fun Buttons(
-        modifier: Modifier,
-        viewModel: HowManyDaysViewModel,
-        editedDayInfo: DayInfo,
-        mode: EditMode,
-        onNavigateToMain: () -> Unit
-) {
-    val coroutineScope = rememberCoroutineScope()
-    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
-
-    if (showConfirmDeleteDialog) {
-        ConfirmDeleteDialog(
-                onConfirm = {
-                    showConfirmDeleteDialog = false
-                    coroutineScope.launch {
-                        viewModel.deleteDayInfo(viewModel.selectedDayInfo.value!!)
-                        onNavigateToMain()
-                    }
-                },
-                onDismiss = { showConfirmDeleteDialog = false }
-        )
-    }
-
-    Row(horizontalArrangement = Arrangement.End, modifier = modifier.fillMaxWidth()) {
-        TextButton(onClick = { onNavigateToMain() }) { Text(text = "キャンセル") }
-        if (mode == EditMode.Add) {
-            TextButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            viewModel.saveDayInfoWithMilestones(editedDayInfo)
-                            onNavigateToMain()
-                        }
-                    }
-            ) { Text(text = "登録") }
-        } else {
-            TextButton(onClick = { showConfirmDeleteDialog = true }) { Text(text = "削除") }
-            TextButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            viewModel.saveDayInfoWithMilestones(editedDayInfo)
-                            onNavigateToMain()
-                        }
-                    }
-            ) { Text(text = "更新") }
-        }
-    }
 }
 
 @Composable
